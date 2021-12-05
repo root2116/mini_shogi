@@ -1,0 +1,11 @@
+*
+!*/
+!*.*
+
+.vscode
+*.dSYM
+*.o
+*.dat
+.DS_Store
+/build
+!Makefile

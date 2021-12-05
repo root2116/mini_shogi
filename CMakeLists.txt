@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.2)
+project(mini_shogi C)
+set(CMAKE_C_FLAGS "-g -Wall")
+add_subdirectory(./game)
+add_executable(main main.c)
+target_link_libraries(main game)
