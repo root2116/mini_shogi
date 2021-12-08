@@ -20,6 +20,8 @@ Piece new_bishop(int side){
     instance->m->name = "KK";
     
     instance->m->eng_name = "BISHOP";
+    instance->m->idle_eng_name = "HORSE";
+    
     instance->m->kind = BISHOP;
     instance->m->promoted = false;
 

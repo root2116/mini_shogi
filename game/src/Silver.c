@@ -23,6 +23,8 @@ Piece new_silver(int side){
 
     instance->m->name = "GI";
     instance->m->eng_name = "SILVER";
+    instance->m->idle_eng_name = "NARI-SILVER";
+
     instance->m->kind = SILVER;
     instance->m->promoted = false;
 

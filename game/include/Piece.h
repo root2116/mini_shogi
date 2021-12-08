@@ -23,6 +23,7 @@ struct piece_member
 {
     char *name;
     char *eng_name;
+    char *idle_eng_name;
     PieceKind kind;
     bool promoted;
     Point cur_loc;

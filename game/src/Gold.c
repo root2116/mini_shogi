@@ -22,6 +22,8 @@ Piece new_gold(int side){
 
     instance->m->name = "KI";
     instance->m->eng_name = "GOLD";
+    instance->m->idle_eng_name = "GOLD";
+    
     instance->m->kind = GOLD;
     instance->m->promoted = false;
 

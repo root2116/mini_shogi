@@ -21,6 +21,8 @@ Piece new_rook(int side){
 
     instance->m->name = "HI";
     instance->m->eng_name = "ROOK";
+    instance->m->idle_eng_name = "DRAGON";
+    
     instance->m->kind = ROOK;
     instance->m->promoted = false;
 

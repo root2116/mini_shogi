@@ -19,6 +19,8 @@ Piece new_pawn(int side){
     
     instance->m->name = "FU";
     instance->m->eng_name = "PAWN";
+    instance->m->idle_eng_name = "TO-GOLD";
+
     instance->m->kind = PAWN;
     instance->m->promoted = false;
 
