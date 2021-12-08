@@ -107,3 +107,7 @@ void betray(Piece this){
 
 
 }
+
+void promote(Piece this){
+    //abilityとidle_abilityをswap. eng_nameとidle_eng_nameもswap.
+}

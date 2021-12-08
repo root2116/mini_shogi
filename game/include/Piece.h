@@ -44,7 +44,7 @@ struct piece_t {
     Piece (*move)(Piece,Point,Board);
     bool (*drop)(Piece,Point,Board);
     void (*betray)(Piece);
-    bool (*promote)(Piece);
+    void (*promote)(Piece);
     Point (*get_location)(Piece);
     int (*get_side)(Piece);
     int (*get_kind)(Piece);
@@ -62,6 +62,7 @@ char *get_eng_name(Piece this);
 Piece move(Piece,Point,Board);
 bool drop(Piece,Point,Board);
 void betray(Piece);
+void promote(Piece);
 
 
 #endif

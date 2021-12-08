@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-static bool promote(Piece this);
+
 
 Piece new_rook(int side){
     Piece instance = new_piece();
@@ -22,7 +22,7 @@ Piece new_rook(int side){
     instance->m->name = "HI";
     instance->m->eng_name = "ROOK";
     instance->m->idle_eng_name = "DRAGON";
-    
+
     instance->m->kind = ROOK;
     instance->m->promoted = false;
 
@@ -65,11 +65,7 @@ Piece new_rook(int side){
 }
 
 
-static bool promote(Piece this){
-    //もし成れるのなら
-    this->m->promoted = true;
-    return true;
-}
+
 
 
 

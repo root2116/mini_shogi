@@ -9,7 +9,7 @@
 
 
 
-static bool promote(Piece this);
+
 
 
 Piece new_silver(int side){
@@ -73,14 +73,5 @@ Piece new_silver(int side){
     return instance;
 
 }
-
-
-
-static bool promote(Piece this){
-    //もし成れるのなら
-    this->m->promoted = true;
-    return true;
-}
-
 
 
