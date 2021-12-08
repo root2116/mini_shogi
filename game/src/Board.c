@@ -164,6 +164,11 @@ static void drop_piece(Board this,Piece piece, Point dest){
 
 }
 
+static bool can_promote(Board this, Piece piece, Point dest){
+    //成れるかどうか判定する
+    return true;
+}
+
 
 Board new_board(int turn)
 {
@@ -176,6 +181,7 @@ Board new_board(int turn)
     instance->move_piece = move_piece;
     instance->can_drop = can_drop;
     instance->drop_piece = drop_piece;
+    instance->can_promote = can_promote;
     
 
     Piece king0 = new_king(FIRST);

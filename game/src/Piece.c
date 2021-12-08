@@ -59,25 +59,29 @@ char* get_eng_name(Piece this){
 
 
 
-//駒を取ったらそれを返し、取らなかったらNULLを返す。そもそも動かせなかったら自分自身を返す
-Piece move(Piece this, Point end, Board board){
+//動かせたらtrue,動かせなかったらfalseが返る
+bool move(Piece this, Point end, Board board, bool will_promote, Piece *captured){
     for(int i = 0; i < this->m->ability.length; i++){
         Point dest;
         add_vec_to_point(this->m->cur_loc,this->m->ability.directions[i],&dest);
         
         if(is_same_point(dest,end)){
-            if(board->can_move(board,this,dest)){
-                
-                Piece captured = board->move_piece(board,this,end);
-                this->m->cur_loc.x = end.x;
-                this->m->cur_loc.y = end.y;
-                return captured;
-            }else{
-                return this;
+            if(!board->can_move(board,this,dest)) return false;
+            if(will_promote && !board->can_promote(board,this,dest)) return false;
+
+
+            if(will_promote){
+                this->promote(this);
             }
+
+            *captured = board->move_piece(board, this, end);
+            this->m->cur_loc.x = end.x;
+            this->m->cur_loc.y = end.y;
+            return true;
+
         }
     }
-    return this;
+    return false;
 }
 
 bool drop(Piece this, Point loc, Board board){
@@ -100,7 +104,11 @@ void betray(Piece this){
 
     inverse_vectors(this->m->ability.directions,this->m->ability.length);
     inverse_vectors(this->m->idle_ability.directions,this->m->idle_ability.length);
-    
+
+    if(this->m->promoted == true){
+        demote(this);
+    }
+
     if(this->m->side == FIRST){
         this->m->side = SECOND;
     }else if(this->m->side == SECOND){
@@ -111,5 +119,30 @@ void betray(Piece this){
 }
 
 void promote(Piece this){
-    //abilityとidle_abilityをswap. eng_nameとidle_eng_nameもswap.
+    //abilityとidle_abilityをswap.
+    Ability tmp_ability = this->m->ability;
+    this->m->ability = this->m->idle_ability;
+    this->m->idle_ability = tmp_ability;
+
+    // display_boardを使わなければこの処理はいらない
+    char *tmp_name = this->m->eng_name;
+    this->m->eng_name = this->m->idle_eng_name;
+    this->m->idle_eng_name = tmp_name;
+
+    this->m->promoted = true;
+}
+
+void demote(Piece this){
+    // abilityとidle_abilityをswap.
+    Ability tmp_ability = this->m->ability;
+    this->m->ability = this->m->idle_ability;
+    this->m->idle_ability = tmp_ability;
+
+    //display_boardを使わなければこの処理はいらない
+    char *tmp_name = this->m->eng_name;
+    this->m->eng_name = this->m->idle_eng_name;
+    this->m->idle_eng_name = tmp_name;
+
+    this->m->promoted = false;
+
 }

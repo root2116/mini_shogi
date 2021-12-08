@@ -7,6 +7,6 @@
 Piece new_silver(int side);
 
 
-static bool promote(Piece);
+
 
 #endif

@@ -30,18 +30,21 @@ Player new_player(int turn){
 static bool move_my_piece(Player this, Move move, Board board){
     
     Piece piece = board->board[move.start.y][move.start.x];
+    
 
     //自分の駒じゃないものは動かせない
     if(piece->get_side(piece) != this->turn) return false;
 
-    Piece captured = piece->move(piece,move.end,board);
-
-    //動かせない場合は、自分自身が返ってくる
-    if(captured == piece) return false;
+    
+    Piece captured = NULL;
+    if(piece->move(piece, move.end, board, move.will_promote,&captured) == false){
+        return false;
+    }
 
     if(captured != NULL){
         add_captured(this,captured);
     }
+
     return true;
     
 

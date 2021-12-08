@@ -1,6 +1,7 @@
 #ifndef INCLUDED_GAME
 #define INCLUDED_GAME
 
+#include <stdbool.h>
 
 #define FIRST 0
 #define SECOND 1
@@ -35,6 +36,7 @@ typedef struct
 {
     Point start;
     Point end;
+    bool will_promote;
 } Move;
 
 typedef struct {

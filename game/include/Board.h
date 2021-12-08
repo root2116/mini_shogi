@@ -21,6 +21,7 @@ struct board_t {
     Piece (*move_piece)(Board, Piece, Point);
     bool (*can_drop)(Board,Point);
     void (*drop_piece)(Board, Piece,Point);
+    bool (*can_promote)(Board,Piece,Point);
     Piece board[5][5];
     int turn;
 };

@@ -14,13 +14,16 @@ void start_game(){
 
     Player players[2] = {player0, player1};
 
-    char input[5] = "0000";
+    char input[6] = "00000";
 
-    Move move = {0, 0, 0, 0};
+    Move move = {0, 0, 0, 0, 0};
     Drop drop = {0, 0, NONE};
 
     while (1)
     {
+        //inputの初期化
+        init_string(input,'0');
+
         board->display_board(board, player0, player1);
         printf("%d's turn\n", board->get_turn(board));
 

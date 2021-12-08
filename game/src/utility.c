@@ -54,6 +54,13 @@ void parse_move(char *input, Move *move)
     move->start.y = 5 - ctoi(input[0]);
     move->end.x = input[3] - 65;
     move->end.y = 5 - ctoi(input[2]);
+    
+    if(input[4] == 'N'){
+        move->will_promote = true;
+    }else{
+        move->will_promote = false;
+    }
+    
 }
 
 void parse_drop(char *input, Drop *drop)
@@ -88,5 +95,12 @@ void inverse_vectors(Vector *vecs, int len){
     for(int i = 0; i < len; i++){
         vecs[i].x = -vecs[i].x;
         vecs[i].y = -vecs[i].y;
+    }
+}
+
+void init_string(char* str,char init){
+    while(*str != '\0'){
+        *str = init;
+        str++;
     }
 }

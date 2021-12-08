@@ -41,7 +41,7 @@ typedef struct piece_t *Piece;
 
 struct piece_t {
     struct piece_member *m;
-    Piece (*move)(Piece,Point,Board);
+    bool (*move)(Piece,Point,Board,bool,Piece*);
     bool (*drop)(Piece,Point,Board);
     void (*betray)(Piece);
     void (*promote)(Piece);
@@ -59,10 +59,10 @@ int get_side(Piece this);
 int get_kind(Piece this);
 char *get_name(Piece this);
 char *get_eng_name(Piece this);
-Piece move(Piece,Point,Board);
+bool move(Piece,Point,Board,bool,Piece*);
 bool drop(Piece,Point,Board);
 void betray(Piece);
 void promote(Piece);
-
+void demote(Piece);
 
 #endif
