@@ -23,6 +23,7 @@ Piece new_piece(){
     piece->betray = betray;
     piece->move = move;
     piece->drop = drop;
+    piece->promote = promote;
 
 
     return piece;
@@ -98,7 +99,8 @@ bool drop(Piece this, Point loc, Board board){
 void betray(Piece this){
 
     inverse_vectors(this->m->ability.directions,this->m->ability.length);
-
+    inverse_vectors(this->m->idle_ability.directions,this->m->idle_ability.length);
+    
     if(this->m->side == FIRST){
         this->m->side = SECOND;
     }else if(this->m->side == SECOND){
