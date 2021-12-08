@@ -34,9 +34,10 @@ Piece new_king(int side){
     instance->m->ability.directions = convert_array_into_vectors(king_array,KING_MOVE_NUM);
     instance->m->ability.length = KING_MOVE_NUM;
 
-    instance->m->side = side;
+    instance->m->idle_ability.directions = convert_array_into_vectors(king_array, KING_MOVE_NUM);
+    instance->m->ability.length = KING_MOVE_NUM;
     
-   
+    instance->m->side = side;
 
     return instance;
 

@@ -36,6 +36,7 @@ static bool move_my_piece(Player this, Move move, Board board){
 
     Piece captured = piece->move(piece,move.end,board);
 
+    //動かせない場合は、自分自身が返ってくる
     if(captured == piece) return false;
 
     if(captured != NULL){

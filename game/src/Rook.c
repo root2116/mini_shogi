@@ -42,9 +42,20 @@ Piece new_rook(int side){
         { 0,-1},{ 0,-2},{ 0,-3},{ 0,-4}
         };
 
+    int promoted_rook_array[PROMOTED_ROOK_MOVE_NUM][2] = {
+        { 1, 0},{ 2, 0},{ 3, 0},{ 4, 0},
+        { 0, 1},{ 0, 2},{ 0, 3},{ 0, 4},
+        {-1, 0},{-2, 0},{-3, 0},{-4, 0},
+        { 0,-1},{ 0,-2},{ 0,-3},{ 0,-4},
+        { 1,-1},{ 1, 1},{-1, 1},{-1,-1}
+    };
+
 
     instance->m->ability.directions = convert_array_into_vectors(rook_array,ROOK_MOVE_NUM);
     instance->m->ability.length = ROOK_MOVE_NUM;
+
+    instance->m->idle_ability.directions = convert_array_into_vectors(promoted_rook_array,PROMOTED_ROOK_MOVE_NUM);
+    instance->m->idle_ability.length = PROMOTED_ROOK_MOVE_NUM;
 
     instance->m->side = side;
 

@@ -4,7 +4,7 @@
 #include "Piece.h"
 #include "Board.h"
 
-#define BISHOP_MOVE_NUM 16
+
 
 Piece new_bishop(int side);
 

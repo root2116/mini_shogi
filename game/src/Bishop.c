@@ -40,8 +40,22 @@ Piece new_bishop(int side){
         {-1,-1},{-2,-2},{-3,-3},{-4,-4},
         { 1,-1},{ 2,-2},{ 3,-3},{ 4,-4}
         };
+    
+    int promoted_bishop_array[PROMOTED_BISHOP_MOVE_NUM][2] = {
+        { 1, 1},{ 2, 2},{ 3, 3},{ 4, 4},
+        {-1, 1},{-2, 2},{-3, 3},{-4, 4},
+        {-1,-1},{-2,-2},{-3,-3},{-4,-4},
+        { 1,-1},{ 2,-2},{ 3,-3},{ 4,-4},
+        { 1, 0},{ 0, 1},{-1, 0},{0, -1}
+        };
+
+
+    
     instance->m->ability.directions = convert_array_into_vectors(bishop_array,BISHOP_MOVE_NUM);
     instance->m->ability.length = BISHOP_MOVE_NUM;
+
+    instance->m->idle_ability.directions = convert_array_into_vectors(promoted_bishop_array,PROMOTED_BISHOP_MOVE_NUM);
+    instance->m->idle_ability.length = PROMOTED_BISHOP_MOVE_NUM;
 
     instance->m->side = side;
 

@@ -36,7 +36,7 @@ Piece new_gold(int side){
         instance->m->cur_loc.y = 0;
     }
 
-     int gold_array[GOLD_MOVE_NUM][2] = {
+    int gold_array[GOLD_MOVE_NUM][2] = {
         {1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{0,1}
         };
 
@@ -45,13 +45,16 @@ Piece new_gold(int side){
     if (side == FIRST){
 
         instance->m->ability.directions = vectors;
+        instance->m->idle_ability.directions = vectors;
 
     }else if(side == SECOND){
         inverse_vectors(vectors,GOLD_MOVE_NUM);
         instance->m->ability.directions = vectors;
+        instance->m->idle_ability.directions = vectors;
     }
     
     instance->m->ability.length = GOLD_MOVE_NUM;
+    instance->m->idle_ability.length = GOLD_MOVE_NUM;
 
     instance->m->side = side;
 

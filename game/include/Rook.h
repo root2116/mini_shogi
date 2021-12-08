@@ -4,7 +4,7 @@
 #include "Piece.h"
 #include "Board.h"
 
-#define ROOK_MOVE_NUM 16
+
 
 Piece new_rook(int side);
 

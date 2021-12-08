@@ -5,6 +5,15 @@
 #include "Board.h"
 #include <stdbool.h>
 
+#define GOLD_MOVE_NUM 6
+#define ROOK_MOVE_NUM 16
+#define PROMOTED_ROOK_MOVE_NUM 20
+#define BISHOP_MOVE_NUM 16
+#define PROMOTED_BISHOP_MOVE_NUM 20
+#define SILVER_MOVE_NUM 5
+#define PAWN_MOVE_NUM 1
+#define KING_MOVE_NUM 8
+
 typedef struct {
     Vector *directions;
     int length;
@@ -19,6 +28,7 @@ struct piece_member
     Point cur_loc;
     int side;
     Ability ability;
+    Ability idle_ability;
 };
 
 struct piece_t;

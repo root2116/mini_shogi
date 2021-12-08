@@ -6,7 +6,7 @@
 
 Piece new_silver(int side);
 
-#define SILVER_MOVE_NUM 5
+
 static bool promote(Piece);
 
 #endif

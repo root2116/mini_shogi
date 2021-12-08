@@ -39,18 +39,31 @@ Piece new_silver(int side){
         {1,-1},{0,-1},{-1,-1},{-1,1},{1,1}
         };
 
+    int gold_array[GOLD_MOVE_NUM][2] = {
+        {1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{0,1}
+        };
+
+
     Vector *vectors = convert_array_into_vectors(silver_array, SILVER_MOVE_NUM);
+    Vector *idle_vectors = convert_array_into_vectors(gold_array,GOLD_MOVE_NUM);
+
     if(side == FIRST){
         
         instance->m->ability.directions = vectors;
+        instance->m->idle_ability.directions = idle_vectors;
 
     }else if(side == SECOND){
 
         inverse_vectors(vectors,SILVER_MOVE_NUM);
+        inverse_vectors(idle_vectors,GOLD_MOVE_NUM);
+
         instance->m->ability.directions = vectors;
+        instance->m->idle_ability.directions = idle_vectors;
+
     }
     
     instance->m->ability.length = SILVER_MOVE_NUM;
+    instance->m->idle_ability.length = GOLD_MOVE_NUM;
 
     instance->m->side = side;
     
