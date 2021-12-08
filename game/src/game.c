@@ -20,8 +20,10 @@ void start_game(){
     Drop drop = {0, 0, NONE};
 
     while (1)
-    {
-        //inputの初期化
+    {   
+        
+        board->increment_turn_count(board);
+
         init_string(input,'0');
 
         board->display_board(board, player0, player1);

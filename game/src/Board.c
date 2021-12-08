@@ -80,8 +80,16 @@ static void update_turn(Board this){
     else if(this->turn == SECOND) this->turn = FIRST;
 }
 
+static void increment_turn_count(Board this){
+    this->turn_count++;
+}
+
 static int get_turn(Board this){
     return this->turn;
+}
+
+static int get_turn_count(Board this){
+    return this->turn_count;
 }
 
 static bool can_move(Board this, Piece piece, Point dest){
@@ -169,19 +177,39 @@ static bool can_promote(Board this, Piece piece, Point dest){
     return true;
 }
 
+//現在の盤面を文字列に変えて、historyに保存する
+static void record_board(Board this){
+   
+}
+
+//千日手を判定する
+static bool check_repetition(Board this){
+    
+}
+
+//side側が王手をかけているか判定する
+static bool judge_check(Board this, int side){
+
+}
 
 Board new_board(int turn)
 {
     Board instance = calloc(1,sizeof(*instance));
     instance->turn = turn;
+    instance->turn_count = 1;
+
     instance->display_board = display_board;
     instance->update_turn = update_turn;
+    instance->increment_turn_count = increment_turn_count;
     instance->get_turn = get_turn;
+    instance->get_turn_count = get_turn_count;
     instance->can_move = can_move;
     instance->move_piece = move_piece;
     instance->can_drop = can_drop;
     instance->drop_piece = drop_piece;
     instance->can_promote = can_promote;
+    instance->record_board = record_board;
+    instance->check_repetition = check_repetition;
     
 
     Piece king0 = new_king(FIRST);
@@ -204,6 +232,13 @@ Board new_board(int turn)
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             instance->board[i][j] = NULL;
+        }
+    }
+
+    //historyを初期化
+    for(int i = 0; i < 150; i++){
+        for(int j = 0; j < 25; j++){
+            instance->history[i][j] = '\0';
         }
     }
 

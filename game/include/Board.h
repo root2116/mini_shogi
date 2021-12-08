@@ -16,14 +16,21 @@ typedef struct board_t *Board;
 struct board_t {
     void (*display_board)(Board,Player,Player);
     void (*update_turn)(Board);
+    void (*increment_turn_count)(Board);
     int (*get_turn)(Board);
+    int (*get_turn_count)(Board);
     bool (*can_move)(Board, Piece, Point);
     Piece (*move_piece)(Board, Piece, Point);
     bool (*can_drop)(Board,Point);
     void (*drop_piece)(Board, Piece,Point);
     bool (*can_promote)(Board,Piece,Point);
+    void (*record_board)(Board);
+    bool (*check_repetition)(Board);
+    bool (*judge_check)(Board,int);
     Piece board[5][5];
+    char history[150][25];
     int turn;
+    int turn_count;
 };
 
 Board new_board(int turn);
