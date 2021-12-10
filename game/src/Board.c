@@ -177,8 +177,25 @@ static bool can_promote(Board this, Piece piece, Point dest){
     return true;
 }
 
-//現在の盤面を文字列に変えて、historyに保存する
+//現在の盤面を文字列に変えて、history[turn_count]に保存する
 static void record_board(Board this){
+    
+    for (int i = 0; i < 5; i++){
+        for (int j = 0; j < 5; j++){
+            
+            Piece piece = this->board[i][j];
+
+            if(piece !=NULL){
+                if(piece->get_side(piece) == FIRST){
+                    this->history[this->turn_count][5 * i + j] = piece->get_eng_name(piece)[0];
+                }else if(piece->get_side(piece) == SECOND){
+                    this->history[this->turn_count][5 * i + j] = piece->get_eng_name(piece)[0]+32;
+                }
+            }else{
+                this->history[this->turn_count][5 * i + j] = '.';
+            }
+        }
+    }
    
 }
 
@@ -236,8 +253,8 @@ Board new_board(int turn)
     }
 
     //historyを初期化
-    for(int i = 0; i < 150; i++){
-        for(int j = 0; j < 25; j++){
+    for(int i = 0; i < 151; i++){
+        for(int j = 0; j < 26; j++){
             instance->history[i][j] = '\0';
         }
     }

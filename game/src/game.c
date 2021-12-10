@@ -8,6 +8,7 @@
 void start_game(){
 
     Board board = new_board(FIRST);
+    board->record_board(board);
 
     Player player0 = new_player(FIRST);
     Player player1 = new_player(SECOND);
@@ -50,7 +51,7 @@ void start_game(){
                 continue;
             }
         }
-
+        board->record_board(board);
         board->update_turn(board);
     }
 }

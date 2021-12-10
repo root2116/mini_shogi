@@ -28,7 +28,7 @@ struct board_t {
     bool (*check_repetition)(Board);
     bool (*judge_check)(Board,int);
     Piece board[5][5];
-    char history[150][25];
+    char history[151][26];
     int turn;
     int turn_count;
 };
