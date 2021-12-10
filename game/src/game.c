@@ -50,6 +50,7 @@ void start_game(){
                 continue;
             }
         }
+        if (board->judge_check(board)) printf("王手です");
 
         board->update_turn(board);
     }

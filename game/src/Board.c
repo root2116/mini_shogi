@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 bool is_on_board(Point p){
     if (p.x >= 0 && p.x <= 4 && p.y >= 0 && p.y <= 4) return true;
@@ -187,9 +188,50 @@ static bool check_repetition(Board this){
     
 }
 
-//side側が王手をかけているか判定する
-static bool judge_check(Board this, int side){
-
+//turn側が王手をかけているか判定する
+static bool judge_check(Board this){
+    //相手の王の位置を探す
+    bool flag1 = false;
+    Point kingLoc;
+    for (int i = 0; i < 5; i++){
+        for (int j = 0; j < 5; j++){
+            Piece piece1 = this->board[i][j];
+            if(piece1 != NULL){
+                if(strcmp(piece1->get_name(piece1),"OU") == 0 && piece1->get_side(piece1) == 1 - this->get_turn(this)){
+                    kingLoc = piece1->get_location(piece1);
+                    flag1 = true;
+                    break;
+                }
+            }
+        }
+        if(flag1) break;
+    }
+    //turn側の駒の動ける範囲に相手の王が含まれているか
+    bool finalFlag = false;
+    bool flag2 = false;
+    for (int i = 0; i < 5; i++){
+        for (int j = 0; j < 5; j++){
+            Piece piece2 = this->board[i][j];
+            if(piece2 != NULL){
+                if(piece2->get_side(piece2) == this->get_turn(this)){
+                    for(int k = 0; k < piece2->m->ability.length; k++){
+                        Point dest;
+                        add_vec_to_point(piece2->m->cur_loc,piece2->m->ability.directions[k],&dest);
+                        if(is_same_point(dest,kingLoc)){
+                            if(this->can_move(this,piece2,dest)){
+                                finalFlag = true;
+                                flag2 = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(flag2) break;
+                }
+            }
+        }
+        if(flag2) break;
+    }
+    return finalFlag;
 }
 
 Board new_board(int turn)
@@ -210,6 +252,7 @@ Board new_board(int turn)
     instance->can_promote = can_promote;
     instance->record_board = record_board;
     instance->check_repetition = check_repetition;
+    instance->judge_check = judge_check;
     
 
     Piece king0 = new_king(FIRST);

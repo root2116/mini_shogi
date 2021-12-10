@@ -26,7 +26,7 @@ struct board_t {
     bool (*can_promote)(Board,Piece,Point);
     void (*record_board)(Board);
     bool (*check_repetition)(Board);
-    bool (*judge_check)(Board,int);
+    bool (*judge_check)(Board);
     Piece board[5][5];
     char history[150][25];
     int turn;
