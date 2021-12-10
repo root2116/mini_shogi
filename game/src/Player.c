@@ -35,6 +35,9 @@ static bool move_my_piece(Player this, Move move, Board board){
     //自分の駒じゃないものは動かせない
     if(piece->get_side(piece) != this->turn) return false;
 
+    //歩は成れるなら必ず成る
+    if(piece->get_kind(piece) == PAWN && board->can_promote(board,piece,move.end) && move.will_promote == false) return false;
+
     
     Piece captured = NULL;
     if(piece->move(piece, move.end, board, move.will_promote,&captured) == false){
