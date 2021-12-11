@@ -65,5 +65,6 @@ bool drop(Piece,Point,Board);
 void betray(Piece);
 void promote(Piece);
 void demote(Piece);
+void swap_piece_attributes(Piece this);
 
 #endif

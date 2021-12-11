@@ -24,6 +24,18 @@ bool is_on_board(Point p){
     else return false;
 }
 
+bool is_on_enemy_area(int side,Point p){
+    if(side == FIRST){
+        if(p.y == 0) return true;
+        else false;
+    }else if(side == SECOND){
+        if(p.y == 4) return true;
+        else false;
+    }
+
+    return false;
+}
+
 static void display_board(Board this,Player player0, Player player1){
     printf("\n");
 
@@ -155,15 +167,20 @@ static Piece move_piece(Board this, Piece piece, Point dest){
 static bool can_drop(Board this,Piece piece,Point dest){
 
     //盤面外には置けない
-    if(!is_on_board(dest)) return false;
+    if(!is_on_board(dest)) 
+        return false;
 
     //二歩なら置けない
-    if(this->check_double_pawn(this,piece,dest)) return false;
+    if(this->check_double_pawn(this,piece,dest)) 
+        return false;
+
+    //相手の陣地に歩は置けない
+    if (piece->get_kind(piece) == PAWN && is_on_enemy_area(piece->get_side(piece), dest))
+        return false;
 
     //何も無ければ置ける
-    if(this->board[dest.y][dest.x] == NULL){
+    if(this->board[dest.y][dest.x] == NULL)
         return true;
-    }
     
 
     return false;

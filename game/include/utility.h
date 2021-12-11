@@ -15,5 +15,6 @@ void parse_drop(char *input, Drop *drop);
 void multiply_array_by_minus(int array[][2], int len);
 void inverse_vectors(Vector *vecs, int len);
 void init_string(char *str, char init);
-void swap_piece_attributes(Piece this);
+
+
 #endif
