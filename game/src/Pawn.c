@@ -22,6 +22,8 @@ Piece new_pawn(int side){
     instance->m->idle_eng_name = "TO-GOLD";
 
     instance->m->kind = PAWN;
+    instance->m->idle_kind = PROMOTED_PAWN;
+    
     instance->m->promoted = false;
 
     if (side == FIRST)

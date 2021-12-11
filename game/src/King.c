@@ -21,6 +21,7 @@ Piece new_king(int side){
     instance->m->idle_eng_name = "KING";
 
     instance->m->kind = KING;
+    instance->m->idle_kind = KING;
     instance->m->promoted = false;
 
     if(side == FIRST){

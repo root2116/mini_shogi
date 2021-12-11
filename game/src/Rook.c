@@ -24,6 +24,8 @@ Piece new_rook(int side){
     instance->m->idle_eng_name = "DRAGON";
 
     instance->m->kind = ROOK;
+    instance->m->idle_kind = DRAGON;
+    
     instance->m->promoted = false;
 
     if (side == FIRST)

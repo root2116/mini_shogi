@@ -1,4 +1,5 @@
 #include "../include/game.h"
+#include "../include/Piece.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -103,4 +104,21 @@ void init_string(char* str,char init){
         *str = init;
         str++;
     }
+}
+
+void swap_piece_attributes(Piece this)
+{
+    // abilityとidle_abilityをswap.
+    Ability tmp_ability = this->m->ability;
+    this->m->ability = this->m->idle_ability;
+    this->m->idle_ability = tmp_ability;
+
+    PieceKind tmp_kind = this->m->kind;
+    this->m->kind = this->m->idle_kind;
+    this->m->idle_kind = tmp_kind;
+
+    // display_boardを使わなければこの処理はいらない
+    char *tmp_name = this->m->eng_name;
+    this->m->eng_name = this->m->idle_eng_name;
+    this->m->idle_eng_name = tmp_name;
 }

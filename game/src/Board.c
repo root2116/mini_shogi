@@ -152,10 +152,13 @@ static Piece move_piece(Board this, Piece piece, Point dest){
 
 }
 
-static bool can_drop(Board this,Point dest){
+static bool can_drop(Board this,Piece piece,Point dest){
 
     //盤面外には置けない
     if(!is_on_board(dest)) return false;
+
+    //二歩なら置けない
+    if(this->check_double_pawn(this,piece,dest)) return false;
 
     //何も無ければ置ける
     if(this->board[dest.y][dest.x] == NULL){
@@ -234,6 +237,40 @@ static bool judge_check(Board this){
     return finalFlag;
 }
 
+//歩が2個しかないことを仮定している二歩判定
+bool check_double_pawn(Board this, Piece piece, Point dest){
+
+    //そもそも歩じゃなかったら二歩にはならない
+    if(piece->get_kind(piece) != PAWN) return false;
+
+
+    Piece pawn = NULL;
+    
+    for(int i = 0;i< 5; i++){
+        for(int j = 0; j < 5; j++){
+            Piece target = this->board[i][j];
+            if(target == NULL) continue;
+
+            if (target->get_kind(target) == PAWN){
+                pawn = target;
+            }
+        }
+    }
+
+    //盤上に歩が無ければ二歩にはならない
+    if(pawn == NULL) return false;
+
+
+    int side0 = piece->get_side(piece);
+    int side1 = pawn->get_side(pawn);
+    int x_0 = dest.x;
+    int x_1 = pawn->get_location(pawn).x;
+   
+    if(side0 == side1 && x_0 == x_1) return true;
+    else return false;
+
+}
+
 Board new_board(int turn)
 {
     Board instance = calloc(1,sizeof(*instance));
@@ -253,6 +290,7 @@ Board new_board(int turn)
     instance->record_board = record_board;
     instance->check_repetition = check_repetition;
     instance->judge_check = judge_check;
+    instance->check_double_pawn = check_double_pawn;
     
 
     Piece king0 = new_king(FIRST);

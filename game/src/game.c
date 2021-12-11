@@ -22,7 +22,7 @@ void start_game(){
     while (1)
     {   
         
-        board->increment_turn_count(board);
+        
 
         init_string(input,'0');
 
@@ -52,6 +52,7 @@ void start_game(){
         }
         if (board->judge_check(board)) printf("王手です");
 
+        board->increment_turn_count(board);
         board->update_turn(board);
     }
 }

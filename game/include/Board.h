@@ -21,12 +21,13 @@ struct board_t {
     int (*get_turn_count)(Board);
     bool (*can_move)(Board, Piece, Point);
     Piece (*move_piece)(Board, Piece, Point);
-    bool (*can_drop)(Board,Point);
+    bool (*can_drop)(Board,Piece,Point);
     void (*drop_piece)(Board, Piece,Point);
     bool (*can_promote)(Board,Piece,Point);
     void (*record_board)(Board);
     bool (*check_repetition)(Board);
     bool (*judge_check)(Board);
+    bool (*check_double_pawn)(Board,Piece,Point);
     Piece board[5][5];
     char history[150][25];
     int turn;

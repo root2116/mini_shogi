@@ -25,6 +25,7 @@ struct piece_member
     char *eng_name;
     char *idle_eng_name;
     PieceKind kind;
+    PieceKind idle_kind;
     bool promoted;
     Point cur_loc;
     int side;

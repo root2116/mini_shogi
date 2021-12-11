@@ -26,6 +26,8 @@ Piece new_silver(int side){
     instance->m->idle_eng_name = "NARI-SILVER";
 
     instance->m->kind = SILVER;
+    instance->m->idle_kind = PROMOTED_SILVER;
+    
     instance->m->promoted = false;
 
     if(side == FIRST){

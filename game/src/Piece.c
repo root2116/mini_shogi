@@ -86,7 +86,7 @@ bool move(Piece this, Point end, Board board, bool will_promote, Piece *captured
 
 bool drop(Piece this, Point loc, Board board){
 
-    if(board->can_drop(board,loc)){
+    if(board->can_drop(board,this,loc)){
 
         this->m->cur_loc.x = loc.x;
         this->m->cur_loc.y = loc.y;
@@ -119,30 +119,18 @@ void betray(Piece this){
 }
 
 void promote(Piece this){
-    //abilityとidle_abilityをswap.
-    Ability tmp_ability = this->m->ability;
-    this->m->ability = this->m->idle_ability;
-    this->m->idle_ability = tmp_ability;
 
-    // display_boardを使わなければこの処理はいらない
-    char *tmp_name = this->m->eng_name;
-    this->m->eng_name = this->m->idle_eng_name;
-    this->m->idle_eng_name = tmp_name;
+    swap_piece_attributes(this);
 
     this->m->promoted = true;
 }
 
 void demote(Piece this){
-    // abilityとidle_abilityをswap.
-    Ability tmp_ability = this->m->ability;
-    this->m->ability = this->m->idle_ability;
-    this->m->idle_ability = tmp_ability;
 
-    //display_boardを使わなければこの処理はいらない
-    char *tmp_name = this->m->eng_name;
-    this->m->eng_name = this->m->idle_eng_name;
-    this->m->idle_eng_name = tmp_name;
+    swap_piece_attributes(this);
 
     this->m->promoted = false;
 
 }
+
+
