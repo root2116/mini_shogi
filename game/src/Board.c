@@ -193,9 +193,19 @@ static void drop_piece(Board this,Piece piece, Point dest){
 
 }
 
-static bool can_promote(Board this, Piece piece, Point dest){
+
+static bool can_promote(Board this, Piece piece, Point dest, Move move){
     //成れるかどうか判定する
-    return true;
+    if (move.will_promote){//dest[2] == "N";最後がN
+        if (get_location(piece).y >= 0 && get_location(piece).y <= 4){//直接指してない
+            if((dest.y >= 0 && dest.y <= 1) || (get_location(piece).y >= 0 && get_location(piece).y <= 1)) { //4A-5Aに移動||4A-5Aから移動
+                return true; //成る
+        }
+        else
+            return false; //反則;敗北
+
+    }
+    
 }
 
 //現在の盤面を文字列に変えて、historyに保存する
