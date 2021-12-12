@@ -7,18 +7,20 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-
-
+#include <string.h>
 
 Piece new_king(int side){
     Piece instance = new_piece();
 
     instance->promote = promote;
 
-    instance->m->name = "OU";
-    instance->m->eng_name = "KING";
-    instance->m->idle_eng_name = "KING";
+
+    instance->m->name = calloc(3, sizeof(char));
+    strcpy(instance->m->name, "OU");
+    instance->m->eng_name = calloc(12, sizeof(char));
+    strcpy(instance->m->eng_name, "KING");
+    instance->m->idle_eng_name = calloc(12, sizeof(char));
+    strcpy(instance->m->idle_eng_name, "KING");
 
     instance->m->kind = KING;
     instance->m->idle_kind = KING;

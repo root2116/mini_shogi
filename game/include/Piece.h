@@ -14,6 +14,8 @@
 #define PAWN_MOVE_NUM 1
 #define KING_MOVE_NUM 8
 
+#define PIECE_NUM 12
+
 typedef struct {
     Vector *directions;
     int length;
@@ -46,6 +48,8 @@ struct piece_t {
     bool (*drop)(Piece,Point,Board);
     void (*betray)(Piece);
     void (*promote)(Piece);
+    Piece (*clone_piece)(Piece);
+    void (*free_piece)(Piece);
     Point (*get_location)(Piece);
     int (*get_side)(Piece);
     int (*get_kind)(Piece);
@@ -65,6 +69,8 @@ bool drop(Piece,Point,Board);
 void betray(Piece);
 void promote(Piece);
 void demote(Piece);
-void swap_piece_attributes(Piece this);
+Piece clone_piece(Piece);
+void free_piece(Piece);
+void copy_ability(Ability *original, Ability *dest);void swap_piece_attributes(Piece this);
 
 #endif

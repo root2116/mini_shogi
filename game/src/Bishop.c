@@ -5,6 +5,7 @@
 #include "../include/utility.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 
@@ -17,14 +18,17 @@ Piece new_bishop(int side){
 
     instance->promote = promote;
    
-    instance->m->name = "KK";
+    instance->m->name = calloc(3,sizeof(char));
+    strcpy(instance->m->name,"KK");  
+    instance->m->eng_name = calloc(12,sizeof(char));
+    strcpy(instance->m->eng_name,"BISHOP");
+    instance->m->idle_eng_name = calloc(12, sizeof(char));
+    strcpy(instance->m->idle_eng_name, "HORSE");
     
-    instance->m->eng_name = "BISHOP";
-    instance->m->idle_eng_name = "HORSE";
 
     instance->m->kind = BISHOP;
     instance->m->idle_kind = HORSE;
-    
+
     instance->m->promoted = false;
 
     if (side == FIRST)

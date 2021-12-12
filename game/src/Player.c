@@ -18,10 +18,7 @@ Player new_player(int turn){
 
     player->turn = turn;
 
-    for(int i = 0; i < 5; i++){
-        player->captured_pieces[i] = NULL;
-    }
-    
+   
 
     return player;
 }

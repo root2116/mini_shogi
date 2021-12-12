@@ -3,6 +3,7 @@
 #include "../include/Board.h"
 #include "../include/utility.h"
 #include <stdlib.h>
+#include <string.h>
 
 void swap_piece_attributes(Piece this)
 {
@@ -32,10 +33,13 @@ Piece new_piece(){
     piece->get_name = get_name;
     piece->get_side = get_side;
 
+
     piece->betray = betray;
     piece->move = move;
     piece->drop = drop;
     piece->promote = promote;
+    piece->clone_piece = clone_piece;
+    piece->free_piece = free_piece;
 
 
     return piece;
@@ -143,5 +147,53 @@ void demote(Piece this){
 
     this->m->promoted = false;
 
+}
+
+Piece clone_piece(Piece this){
+    if(this == NULL) return NULL;
+
+    Piece piece = new_piece();
+    piece->m->name = calloc(3,sizeof(char));
+    piece->m->eng_name = calloc(12,sizeof(char));
+    piece->m->idle_eng_name = calloc(12,sizeof(char));
+    strcpy(piece->m->name,this->m->name);
+    strcpy(piece->m->eng_name,this->m->eng_name);
+    strcpy(piece->m->idle_eng_name,this->m->idle_eng_name);
+    piece->m->kind = this->m->kind;
+    piece->m->idle_kind = this->m->idle_kind;
+    piece->m->promoted = this->m->promoted;
+    piece->m->cur_loc.x = this->m->cur_loc.x;
+    piece->m->cur_loc.y = this->m->cur_loc.y;
+    piece->m->side = this->m->side;
+    copy_ability(&(this->m->ability),&(piece->m->ability));
+    copy_ability(&(this->m->idle_ability),&(piece->m->idle_ability));
+
+    return piece;
+
+}
+
+void free_piece(Piece this){
+    if(this == NULL) return;
+
+    free(this->m->name);
+    free(this->m->eng_name);
+    free(this->m->idle_eng_name);
+    free(this->m->ability.directions);
+    free(this->m->idle_ability.directions);
+}
+
+void copy_ability(Ability *original, Ability *dest){
+    
+    Vector *directions = calloc(original->length,sizeof(Vector));
+
+    for(int i = 0; i < original->length; i++){
+        directions[i].x = original->directions[i].x;
+        directions[i].y = original->directions[i].y;
+    }
+
+    dest->length = original->length;
+    dest->directions = directions;
+
+    
 }
 

@@ -5,8 +5,10 @@
 
 
 #include <stdbool.h>
+
 struct piece_t;
 typedef struct piece_t *Piece;
+
 struct player_t;
 typedef struct player_t *Player;
 
@@ -26,9 +28,15 @@ struct board_t {
     bool (*can_promote)(Board,Piece,Point);
     void (*record_board)(Board);
     bool (*check_repetition)(Board);
-    bool (*judge_check)(Board);
+    bool (*judge_check)(Board,int);
     bool (*check_double_pawn)(Board,Piece,Point);
+    void (*clone_board)(Board);
+    void (*restore_board)(Board this);
+    void (*free_board)(Board this);
     Piece board[5][5];
+    Piece board_copy[5][5];
+    Piece captured_pieces[2][10];
+    bool checked[2];
     char history[150][25];
     int turn;
     int turn_count;

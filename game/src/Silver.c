@@ -6,11 +6,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-
-
-
-
-
+#include <string.h>
 
 Piece new_silver(int side){
     Piece instance = new_piece();
@@ -21,13 +17,16 @@ Piece new_silver(int side){
     instance->promote = promote;
    
 
-    instance->m->name = "GI";
-    instance->m->eng_name = "SILVER";
-    instance->m->idle_eng_name = "NARI-SILVER";
+    instance->m->name = calloc(3, sizeof(char));
+    strcpy(instance->m->name, "GI");
+    instance->m->eng_name = calloc(12, sizeof(char));
+    strcpy(instance->m->eng_name, "SILVER");
+    instance->m->idle_eng_name = calloc(12, sizeof(char));
+    strcpy(instance->m->idle_eng_name, "NARI-SILVER");
 
     instance->m->kind = SILVER;
     instance->m->idle_kind = PROMOTED_SILVER;
-    
+
     instance->m->promoted = false;
 
     if(side == FIRST){

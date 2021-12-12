@@ -12,6 +12,9 @@ void start_game(){
     Player player0 = new_player(FIRST);
     Player player1 = new_player(SECOND);
 
+    player0->captured_pieces = board->captured_pieces[0];
+    player1->captured_pieces = board->captured_pieces[1];
+    
     Player players[2] = {player0, player1};
 
     char input[6] = "00000";
@@ -50,7 +53,8 @@ void start_game(){
                 continue;
             }
         }
-        if (board->judge_check(board)) printf("王手です");
+        if (board->judge_check(board,FIRST)) printf("1の王手です");
+        else if(board->judge_check(board,SECOND)) printf("0の王手です");
 
         board->increment_turn_count(board);
         board->update_turn(board);
