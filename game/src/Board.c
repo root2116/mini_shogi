@@ -239,6 +239,8 @@ static bool can_promote(Board this, Piece piece, Point dest, Move move){
     
 }
 
+}
+
 //現在の盤面を文字列に変えて、historyに保存する
 static void record_board(Board this){
    
