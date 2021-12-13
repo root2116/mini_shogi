@@ -27,7 +27,7 @@ struct board_t {
     bool (*can_drop)(Board,Piece,Point);
     void (*drop_piece)(Board, Piece,Point);
     bool (*can_promote)(Board,Piece,Point);
-    void (*record_board)(Board);
+    void (*record_board)(Board, Player, Player);
     bool (*check_repetition)(Board);
     bool (*judge_check)(Board,int);
     bool (*check_double_pawn)(Board,Piece,Point);
@@ -38,8 +38,7 @@ struct board_t {
     Piece board[5][5];
     Piece board_copy[5][5];
     Piece captured_pieces[2][10];
-    bool checked[2];
-    char history[150][25];
+    char history[151][46];
     int turn;
     int turn_count;
 };

@@ -8,7 +8,7 @@
 void start_game(){
 
     Board board = new_board(FIRST);
-
+    
     Player player0 = new_player(FIRST);
     Player player1 = new_player(SECOND);
 
@@ -16,6 +16,8 @@ void start_game(){
     player1->captured_pieces = board->captured_pieces[1];
     
     Player players[2] = {player0, player1};
+
+    board->record_board(board, players[0], players[1]);
 
     char input[6] = "00000";
 
@@ -53,6 +55,9 @@ void start_game(){
                 continue;
             }
         }
+
+        board->record_board(board, players[0], players[1]);
+
         if (board->judge_check(board,FIRST)) printf("1の王手です");
         else if(board->judge_check(board,SECOND)) printf("0の王手です");
 

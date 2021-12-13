@@ -18,7 +18,6 @@ Player new_player(int turn){
 
     player->turn = turn;
 
-   
 
     return player;
 }
