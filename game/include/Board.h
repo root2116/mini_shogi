@@ -24,11 +24,11 @@ struct board_t {
     bool (*can_drop)(Board,Point);
     void (*drop_piece)(Board, Piece,Point);
     bool (*can_promote)(Board,Piece,Point);
-    void (*record_board)(Board);
+    void (*record_board)(Board, Player, Player);
     bool (*check_repetition)(Board);
     bool (*judge_check)(Board,int);
     Piece board[5][5];
-    char history[151][26];
+    char history[151][46];
     int turn;
     int turn_count;
 };

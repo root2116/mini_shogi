@@ -8,12 +8,13 @@
 void start_game(){
 
     Board board = new_board(FIRST);
-    board->record_board(board);
-
+    
     Player player0 = new_player(FIRST);
     Player player1 = new_player(SECOND);
 
     Player players[2] = {player0, player1};
+
+    board->record_board(board, players[0], players[1]);
 
     char input[6] = "00000";
 
@@ -51,7 +52,7 @@ void start_game(){
                 continue;
             }
         }
-        board->record_board(board);
+        board->record_board(board, players[0], players[1]);
         board->update_turn(board);
     }
 }

@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 bool is_on_board(Point p){
     if (p.x >= 0 && p.x <= 4 && p.y >= 0 && p.y <= 4) return true;
@@ -178,7 +179,8 @@ static bool can_promote(Board this, Piece piece, Point dest){
 }
 
 //現在の盤面を文字列に変えて、history[turn_count]に保存する
-static void record_board(Board this){
+//手持ちのコマはplayer0, 1の順でソートして格納
+static void record_board(Board this, Player player0, Player player1){
     
     for (int i = 0; i < 5; i++){
         for (int j = 0; j < 5; j++){
@@ -196,11 +198,56 @@ static void record_board(Board this){
             }
         }
     }
-   
+    for (int i = 0; i < 10; i++){
+        Piece piece0 = player0->captured_pieces[i];
+        Piece piece1 = player1->captured_pieces[i];
+
+        if(piece0 !=NULL){
+            this->history[this->turn_count][25 + i] = piece0->get_eng_name(piece0)[0];
+        }else{
+            this->history[this->turn_count][25 + i] = '.';
+        }
+
+        if(piece1 !=NULL){
+            this->history[this->turn_count][35 + i] = piece1->get_eng_name(piece1)[0];
+        }else{
+            this->history[this->turn_count][35 + i] = '.';
+        }
+        
+    }
+
+    for (int i = 0; i < 10; i++){
+        for (int j = i+1; j < 10; j++){
+            if (this->history[this->turn_count][25+i] > this->history[this->turn_count][25+j]){
+                char tmp = this->history[this->turn_count][25+i];
+                this->history[this->turn_count][25+i] = this->history[this->turn_count][25+j];
+                this->history[this->turn_count][25+j] = tmp;
+            }
+
+            if (this->history[this->turn_count][35+i] > this->history[this->turn_count][35+j]){
+                char tmp = this->history[this->turn_count][35+i];
+                this->history[this->turn_count][35+i] = this->history[this->turn_count][35+j];
+                this->history[this->turn_count][35+j] = tmp;
+            }
+        }
+    }
 }
 
 //千日手を判定する
+//現在の盤面と持ち駒が４度目以上ならTrue、そうでないならFalseを返す
+//注意として　record_boardした後に使う
 static bool check_repetition(Board this){
+    int repetition_count = 1;
+
+    for (int i=1; i <= this->turn_count; i++){
+        if (strcmp(this->history[i], this->history[this->turn_count])){
+            repetition_count += 1;
+        }
+    }
+
+    if (repetition_count >= 4){
+
+    }
     
 }
 
@@ -254,7 +301,7 @@ Board new_board(int turn)
 
     //historyを初期化
     for(int i = 0; i < 151; i++){
-        for(int j = 0; j < 26; j++){
+        for(int j = 0; j < 46; j++){
             instance->history[i][j] = '\0';
         }
     }
