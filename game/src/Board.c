@@ -235,18 +235,20 @@ static void record_board(Board this, Player player0, Player player1){
 
 //千日手を判定する
 //現在の盤面と持ち駒が４度目以上ならTrue、そうでないならFalseを返す
-//注意として　record_boardした後に使う
+//注意としてそのターンのrecord_boardした後に使う
 static bool check_repetition(Board this){
     int repetition_count = 1;
 
     for (int i=1; i <= this->turn_count; i++){
-        if (strcmp(this->history[i], this->history[this->turn_count])){
+        if (strcmp(this->history[i], this->history[this->turn_count]) == 0){
             repetition_count += 1;
         }
     }
 
     if (repetition_count >= 4){
-
+        return true;
+    }else{
+        return false;
     }
     
 }
