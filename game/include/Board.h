@@ -17,6 +17,7 @@ typedef struct board_t *Board;
 
 struct board_t {
     void (*display_board)(Board,Player,Player);
+    void (*display_history)(Board);
     void (*update_turn)(Board);
     void (*increment_turn_count)(Board);
     int (*get_turn)(Board);
@@ -27,7 +28,7 @@ struct board_t {
     bool (*can_drop)(Board,Piece,Point);
     void (*drop_piece)(Board, Piece,Point);
     bool (*can_promote)(Board,Piece,Point);
-    void (*record_board)(Board, Player, Player);
+    void (*record_board)(Board);
     bool (*check_repetition)(Board);
     bool (*judge_check)(Board,int);
     bool (*check_double_pawn)(Board,Piece,Point);

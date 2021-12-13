@@ -71,6 +71,11 @@ bool will_be_checked(Board this, Piece piece, Point dest){
     }
 }
 
+static void display_history(Board this){
+    for(int i = 0; i <= this->get_turn_count(this); i++){
+        printf("%s\n",this->history[i]);
+    }
+}
 static void display_board(Board this,Player player0, Player player1){
     printf("\n");
 
@@ -259,7 +264,7 @@ static bool can_promote(Board this, Piece piece, Point dest, Move move){
 
 //現在の盤面を文字列に変えて、history[turn_count]に保存する
 //手持ちのコマはplayer0, 1の順でソートして格納
-static void record_board(Board this, Player player0, Player player1){
+static void record_board(Board this){
     
     for (int i = 0; i < 5; i++){
         for (int j = 0; j < 5; j++){
@@ -278,8 +283,8 @@ static void record_board(Board this, Player player0, Player player1){
         }
     }
     for (int i = 0; i < 10; i++){
-        Piece piece0 = player0->captured_pieces[i];
-        Piece piece1 = player1->captured_pieces[i];
+        Piece piece0 = this->captured_pieces[FIRST][i];
+        Piece piece1 = this->captured_pieces[SECOND][i];
 
         if(piece0 !=NULL){
             this->history[this->turn_count][25 + i] = piece0->get_eng_name(piece0)[0];
@@ -376,12 +381,6 @@ static bool judge_check(Board this,int side){
         if(flag2) break;
     }
 
-    if(finalFlag){
-        this->checked[side] = true;
-    }else{
-        this->checked[side] = false;
-    }
-
     return finalFlag;
 }
 
@@ -465,10 +464,10 @@ Board new_board(int turn)
     Board instance = calloc(1,sizeof(*instance));
     instance->turn = turn;
     instance->turn_count = 1;
-    instance->checked[0] = false;
-    instance->checked[1] = false;
 
     instance->display_board = display_board;
+    instance->display_history = display_history;
+
     instance->update_turn = update_turn;
     instance->increment_turn_count = increment_turn_count;
     instance->get_turn = get_turn;
