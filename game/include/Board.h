@@ -21,6 +21,7 @@ struct board_t {
     void (*increment_turn_count)(Board);
     int (*get_turn)(Board);
     int (*get_turn_count)(Board);
+    bool (*is_legal_move)(Board,Piece,Point);
     bool (*can_move)(Board, Piece, Point);
     Piece (*move_piece)(Board, Piece, Point);
     bool (*can_drop)(Board,Piece,Point);
@@ -30,6 +31,7 @@ struct board_t {
     bool (*check_repetition)(Board);
     bool (*judge_check)(Board,int);
     bool (*check_double_pawn)(Board,Piece,Point);
+    void (*copy_board)(Board);
     void (*clone_board)(Board);
     void (*restore_board)(Board this);
     void (*free_board)(Board this);

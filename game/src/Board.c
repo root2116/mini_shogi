@@ -36,26 +36,38 @@ bool is_on_enemy_area(int side,Point p){
     return false;
 }
 
-//王手を回避する手かを判定する
-bool is_evasive_move(Board this, Piece piece, Point dest)
-{
-
+Piece find_clone_piece(Board this, Piece piece){
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            Piece target = this->board[i][j];
+            if(target == NULL) continue;
+            if(is_same_point(target->get_location(target),piece->get_location(piece))){
+                return target;
+            }
+        }
+    }
+}
+//次の盤面で王手をかけられるならtrue,かけられないならfalse
+bool will_be_checked(Board this, Piece piece, Point dest){
+    this->copy_board(this);
     this->clone_board(this);
 
-    this->move_piece(this, piece, dest);
+    Piece clone_piece = find_clone_piece(this,piece);
+    this->move_piece(this, clone_piece, dest);
 
-    piece->m->cur_loc.x = dest.x;
-    piece->m->cur_loc.y = dest.y;
+    clone_piece->m->cur_loc.x = dest.x;
+    clone_piece->m->cur_loc.y = dest.y;
 
-    if (this->judge_check(this,piece->get_side(piece)))
+    if (this->judge_check(this, clone_piece->get_side(clone_piece)))
     {
+        
         this->restore_board(this);
-        return false;
+        return true;
     }
     else
     {
-        this->record_board(this);
-        return true;
+        this->restore_board(this);
+        return false;
     }
 }
 
@@ -128,6 +140,15 @@ static int get_turn_count(Board this){
     return this->turn_count;
 }
 
+//合法手か？
+static bool is_legal_move(Board this,Piece piece, Point dest){
+    if(this->can_move(this,piece,dest) == false) return false;
+
+    if(will_be_checked(this,piece,dest)) return false;
+    else return true;
+}
+
+//ルールはさておき、駒をそこに動かせるか？
 static bool can_move(Board this, Piece piece, Point dest){
 
     //盤面内にないなら動かせない
@@ -135,7 +156,11 @@ static bool can_move(Board this, Piece piece, Point dest){
         return false;
     
     
-
+    Piece target = this->board[dest.y][dest.x];
+    //動く先が味方だったら動かせない
+    if(target != NULL){
+        if (target->get_side(target) == piece->get_side(piece)) return false;
+    }
 
     //射線上に駒があると動かせない
     Vector move_vec = {dest.x - piece->get_location(piece).x, dest.y - piece->get_location(piece).y};
@@ -157,22 +182,12 @@ static bool can_move(Board this, Piece piece, Point dest){
         
     }
 
-    Piece target = this->board[dest.y][dest.x];
-    //動く先が味方だったら動かせない
-    if(target != NULL){
-        if (target->get_side(target) == piece->get_side(piece)) return false;
-    }
+    
 
     if (target == NULL || target->get_side(target) != piece->get_side(piece)){
-        if(this->checked[piece->get_side(piece)]){
-            if(is_evasive_move(this,piece,dest)){
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return true;
-        }
+        
+       return true;
+    
     }
     
 
@@ -226,6 +241,7 @@ static void drop_piece(Board this,Piece piece, Point dest){
 
 
 static bool can_promote(Board this, Piece piece, Point dest, Move move){
+    return false;
     //成れるかどうか判定する
     if (move.will_promote){//dest[2] == "N";最後がN
         if (get_location(piece).y >= 0 && get_location(piece).y <= 4){//直接指してない
@@ -338,13 +354,19 @@ bool check_double_pawn(Board this, Piece piece, Point dest){
 
 }
 
-
+void copy_board(Board this){
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            this->board_copy[i][j] = this->board[i][j];
+        }
+    }
+}
 
 void clone_board(Board this){
 
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
-            this->board_copy[i][j] = clone_piece(this->board[i][j]);
+            this->board[i][j] = clone_piece(this->board_copy[i][j]);
         }
     }
 
@@ -386,6 +408,8 @@ Board new_board(int turn)
     instance->increment_turn_count = increment_turn_count;
     instance->get_turn = get_turn;
     instance->get_turn_count = get_turn_count;
+
+    instance->is_legal_move = is_legal_move;
     instance->can_move = can_move;
     instance->move_piece = move_piece;
     instance->can_drop = can_drop;
@@ -395,6 +419,7 @@ Board new_board(int turn)
     instance->check_repetition = check_repetition;
     instance->judge_check = judge_check;
     instance->check_double_pawn = check_double_pawn;
+    instance->copy_board = copy_board;
     instance->clone_board = clone_board;
     instance->restore_board = restore_board;
     instance->free_board = free_board;

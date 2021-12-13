@@ -82,7 +82,7 @@ bool move(Piece this, Point end, Board board, bool will_promote, Piece *captured
         add_vec_to_point(this->m->cur_loc,this->m->ability.directions[i],&dest);
         
         if(is_same_point(dest,end)){
-            if(!board->can_move(board,this,dest)) return false;
+            if(!board->is_legal_move(board,this,dest)) return false;
             if(will_promote && !board->can_promote(board,this,dest)) return false;
 
 
