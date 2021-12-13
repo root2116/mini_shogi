@@ -12,6 +12,9 @@ void start_game(){
     Player player0 = new_player(FIRST);
     Player player1 = new_player(SECOND);
 
+    player0->captured_pieces = board->captured_pieces[0];
+    player1->captured_pieces = board->captured_pieces[1];
+    
     Player players[2] = {player0, player1};
 
     board->record_board(board, players[0], players[1]);
@@ -24,7 +27,7 @@ void start_game(){
     while (1)
     {   
         
-        board->increment_turn_count(board);
+        
 
         init_string(input,'0');
 
@@ -52,7 +55,13 @@ void start_game(){
                 continue;
             }
         }
+
         board->record_board(board, players[0], players[1]);
+
+        if (board->judge_check(board,FIRST)) printf("1の王手です");
+        else if(board->judge_check(board,SECOND)) printf("0の王手です");
+
+        board->increment_turn_count(board);
         board->update_turn(board);
     }
 }

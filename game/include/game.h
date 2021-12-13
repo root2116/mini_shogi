@@ -14,7 +14,11 @@ enum piece_kind
     ROOK,
     GOLD,
     SILVER,
-    PAWN
+    PAWN,
+    HORSE,
+    DRAGON,
+    PROMOTED_SILVER,
+    PROMOTED_PAWN
 };
 
 typedef enum piece_kind PieceKind;

@@ -24,6 +24,53 @@ bool is_on_board(Point p){
     else return false;
 }
 
+bool is_on_enemy_area(int side,Point p){
+    if(side == FIRST){
+        if(p.y == 0) return true;
+        else false;
+    }else if(side == SECOND){
+        if(p.y == 4) return true;
+        else false;
+    }
+
+    return false;
+}
+
+Piece find_clone_piece(Board this, Piece piece){
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            Piece target = this->board[i][j];
+            if(target == NULL) continue;
+            if(is_same_point(target->get_location(target),piece->get_location(piece))){
+                return target;
+            }
+        }
+    }
+}
+//次の盤面で王手をかけられるならtrue,かけられないならfalse
+bool will_be_checked(Board this, Piece piece, Point dest){
+    this->copy_board(this);
+    this->clone_board(this);
+
+    Piece clone_piece = find_clone_piece(this,piece);
+    this->move_piece(this, clone_piece, dest);
+
+    clone_piece->m->cur_loc.x = dest.x;
+    clone_piece->m->cur_loc.y = dest.y;
+
+    if (this->judge_check(this, clone_piece->get_side(clone_piece)))
+    {
+        
+        this->restore_board(this);
+        return true;
+    }
+    else
+    {
+        this->restore_board(this);
+        return false;
+    }
+}
+
 static void display_board(Board this,Player player0, Player player1){
     printf("\n");
 
@@ -93,12 +140,27 @@ static int get_turn_count(Board this){
     return this->turn_count;
 }
 
+//合法手か？
+static bool is_legal_move(Board this,Piece piece, Point dest){
+    if(this->can_move(this,piece,dest) == false) return false;
+
+    if(will_be_checked(this,piece,dest)) return false;
+    else return true;
+}
+
+//ルールはさておき、駒をそこに動かせるか？
 static bool can_move(Board this, Piece piece, Point dest){
 
     //盤面内にないなら動かせない
     if(!is_on_board(dest)) 
         return false;
-
+    
+    
+    Piece target = this->board[dest.y][dest.x];
+    //動く先が味方だったら動かせない
+    if(target != NULL){
+        if (target->get_side(target) == piece->get_side(piece)) return false;
+    }
 
     //射線上に駒があると動かせない
     Vector move_vec = {dest.x - piece->get_location(piece).x, dest.y - piece->get_location(piece).y};
@@ -120,20 +182,16 @@ static bool can_move(Board this, Piece piece, Point dest){
         
     }
 
-
-
-    Piece target = this->board[dest.y][dest.x];
     
-    //何も無ければ動かせる
-    if(target == NULL) 
-        return true;
 
-    //動く先が味方だったら動かせない
-    if (target->m->side == piece->m->side)
-        return false;
+    if (target == NULL || target->get_side(target) != piece->get_side(piece)){
+        
+       return true;
+    
+    }
+    
 
-    //動く先に敵がいるなら動かせる
-    return true;
+    
  
 }
 
@@ -152,15 +210,23 @@ static Piece move_piece(Board this, Piece piece, Point dest){
 
 }
 
-static bool can_drop(Board this,Point dest){
+static bool can_drop(Board this,Piece piece,Point dest){
 
     //盤面外には置けない
-    if(!is_on_board(dest)) return false;
+    if(!is_on_board(dest)) 
+        return false;
+
+    //二歩なら置けない
+    if(this->check_double_pawn(this,piece,dest)) 
+        return false;
+
+    //相手の陣地に歩は置けない
+    if (piece->get_kind(piece) == PAWN && is_on_enemy_area(piece->get_side(piece), dest))
+        return false;
 
     //何も無ければ置ける
-    if(this->board[dest.y][dest.x] == NULL){
+    if(this->board[dest.y][dest.x] == NULL)
         return true;
-    }
     
 
     return false;
@@ -173,9 +239,22 @@ static void drop_piece(Board this,Piece piece, Point dest){
 
 }
 
-static bool can_promote(Board this, Piece piece, Point dest){
+
+static bool can_promote(Board this, Piece piece, Point dest, Move move){
+    return false;
     //成れるかどうか判定する
-    return true;
+    if (move.will_promote){//dest[2] == "N";最後がN
+        if (get_location(piece).y >= 0 && get_location(piece).y <= 4){//直接指してない
+            if((dest.y >= 0 && dest.y <= 1) || (get_location(piece).y >= 0 && get_location(piece).y <= 1)) { //4A-5Aに移動||4A-5Aから移動
+                return true; //成る
+        }
+        else
+            return false; //反則;敗北
+
+    }
+    
+}
+
 }
 
 //現在の盤面を文字列に変えて、history[turn_count]に保存する
@@ -253,22 +332,149 @@ static bool check_repetition(Board this){
     
 }
 
-//side側が王手をかけているか判定する
-static bool judge_check(Board this, int side){
+//side側が王手をかけられているか判定する
+static bool judge_check(Board this,int side){
+    //sideの王の位置を探す
+    bool flag1 = false;
+    Point kingLoc;
+    for (int i = 0; i < 5; i++){
+        for (int j = 0; j < 5; j++){
+            Piece piece1 = this->board[i][j];
+            if(piece1 != NULL){
+                if(piece1->get_kind(piece1) == KING && piece1->get_side(piece1) == side){
+                    kingLoc = piece1->get_location(piece1);
+                    flag1 = true;
+                    break;
+                }
+            }
+        }
+        if(flag1) break;
+    }
+    //相手側の駒の動ける範囲に自分の王が含まれているか
+    bool finalFlag = false;
+    bool flag2 = false;
+    for (int i = 0; i < 5; i++){
+        for (int j = 0; j < 5; j++){
+            Piece piece2 = this->board[i][j];
+            if(piece2 != NULL){
+                if(piece2->get_side(piece2) == 1 - side){
+                    for(int k = 0; k < piece2->m->ability.length; k++){
+                        Point dest;
+                        add_vec_to_point(piece2->m->cur_loc,piece2->m->ability.directions[k],&dest);
+                        if(is_same_point(dest,kingLoc)){
+                            if(this->can_move(this,piece2,dest)){
+                                finalFlag = true;
+                                flag2 = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(flag2) break;
+                }
+            }
+        }
+        if(flag2) break;
+    }
+
+    if(finalFlag){
+        this->checked[side] = true;
+    }else{
+        this->checked[side] = false;
+    }
+
+    return finalFlag;
+}
+
+//歩が2個しかないことを仮定している二歩判定
+bool check_double_pawn(Board this, Piece piece, Point dest){
+
+    //そもそも歩じゃなかったら二歩にはならない
+    if(piece->get_kind(piece) != PAWN) return false;
+
+
+    Piece pawn = NULL;
+    
+    for(int i = 0;i< 5; i++){
+        for(int j = 0; j < 5; j++){
+            Piece target = this->board[i][j];
+            if(target == NULL) continue;
+
+            if (target->get_kind(target) == PAWN){
+                pawn = target;
+            }
+        }
+    }
+
+    //盤上に歩が無ければ二歩にはならない
+    if(pawn == NULL) return false;
+
+
+    int side0 = piece->get_side(piece);
+    int side1 = pawn->get_side(pawn);
+    int x_0 = dest.x;
+    int x_1 = pawn->get_location(pawn).x;
+   
+    if(side0 == side1 && x_0 == x_1) return true;
+    else return false;
 
 }
+
+void copy_board(Board this){
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            this->board_copy[i][j] = this->board[i][j];
+        }
+    }
+}
+
+void clone_board(Board this){
+
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            this->board[i][j] = clone_piece(this->board_copy[i][j]);
+        }
+    }
+
+}
+
+void restore_board(Board this){
+
+    this->free_board(this);
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            
+            this->board[i][j] = this->board_copy[i][j];
+        }
+    }
+}
+
+void free_board(Board this){
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            if(this->board[i][j] == NULL) continue;
+
+            this->board[i][j]->free_piece(this->board[i][j]);
+        }
+    }
+}
+
+
 
 Board new_board(int turn)
 {
     Board instance = calloc(1,sizeof(*instance));
     instance->turn = turn;
     instance->turn_count = 1;
+    instance->checked[0] = false;
+    instance->checked[1] = false;
 
     instance->display_board = display_board;
     instance->update_turn = update_turn;
     instance->increment_turn_count = increment_turn_count;
     instance->get_turn = get_turn;
     instance->get_turn_count = get_turn_count;
+
+    instance->is_legal_move = is_legal_move;
     instance->can_move = can_move;
     instance->move_piece = move_piece;
     instance->can_drop = can_drop;
@@ -276,6 +482,12 @@ Board new_board(int turn)
     instance->can_promote = can_promote;
     instance->record_board = record_board;
     instance->check_repetition = check_repetition;
+    instance->judge_check = judge_check;
+    instance->check_double_pawn = check_double_pawn;
+    instance->copy_board = copy_board;
+    instance->clone_board = clone_board;
+    instance->restore_board = restore_board;
+    instance->free_board = free_board;
     
 
     Piece king0 = new_king(FIRST);
@@ -292,14 +504,23 @@ Board new_board(int turn)
     Piece silver1 = new_silver(SECOND);
     Piece pawn1 = new_pawn(SECOND);
 
-    Piece pieces[12] = {king0,bishop0,rook0,gold0,silver0,pawn0,king1,bishop1,rook1,gold1,silver1,pawn1};
+    Piece pieces[PIECE_NUM] = {king0,bishop0,rook0,gold0,silver0,pawn0,king1,bishop1,rook1,gold1,silver1,pawn1};
 
-    //初期化
+     //boardを初期化
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             instance->board[i][j] = NULL;
+            instance->board_copy[i][j] = NULL;
         }
     }
+
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < 10; j++){
+            instance->captured_pieces[i][j] = NULL;
+        }
+    }
+    
+    
 
     //historyを初期化
     for(int i = 0; i < 151; i++){
@@ -310,7 +531,7 @@ Board new_board(int turn)
 
     //駒を配置
 
-    for(int i = 0; i < 12; i++){
+    for(int i = 0; i < PIECE_NUM; i++){
         Point location = pieces[i]->get_location(pieces[i]);
         instance->board[location.y][location.x] = pieces[i];
     }

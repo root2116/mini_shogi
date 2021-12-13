@@ -13,7 +13,7 @@ typedef struct player_t *Player;
 struct player_t {
     bool (*move_my_piece)(Player,Move, Board);
     bool (*drop_my_captured)(Player,Drop, Board);
-    Piece captured_pieces[10];
+    Piece *captured_pieces;
     int turn;
 };
 
