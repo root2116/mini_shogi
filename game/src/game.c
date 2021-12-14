@@ -1,13 +1,15 @@
 #include "../include/game.h"
 #include "../include/Board.h"
 #include "../include/Player.h"
+#include "../include/Referee.h"
 #include "../include/utility.h"
 
 #include <stdio.h>
 
 void start_game(){
 
-    Board board = new_board(FIRST);
+    Board board = new_board();
+    Referee ref = new_referee(FIRST);
     
     Player player0 = new_player(FIRST);
     Player player1 = new_player(SECOND);
@@ -17,7 +19,7 @@ void start_game(){
     
     Player players[2] = {player0, player1};
 
-    board->record_board(board);
+    ref->record_board(ref,board);
 
     char input[6] = "00000";
 
@@ -32,15 +34,15 @@ void start_game(){
         init_string(input,'0');
 
         board->display_board(board, player0, player1);
-        printf("%d's turn\n", board->get_turn(board));
+        printf("%d's turn\n", ref->get_turn(ref));
 
         scanf("%s", input);
 
-        int turn = board->get_turn(board);
+        int turn = ref->get_turn(ref);
         if (input[2] >= '0' && input[2] <= '9')
         {
             parse_move(input, &move);
-            if (!players[turn]->move_my_piece(players[turn], move, board))
+            if (!players[turn]->move_my_piece(players[turn], move, board,ref))
             {
                 printf("Invalid move!\n");
                 continue;
@@ -49,20 +51,20 @@ void start_game(){
         else
         {
             parse_drop(input, &drop);
-            if (!players[turn]->drop_my_captured(players[turn], drop, board))
+            if (!players[turn]->drop_my_captured(players[turn], drop, board, ref))
             {
                 printf("Invalid drop!\n");
                 continue;
             }
         }
 
-        board->record_board(board);
+        ref->record_board(ref,board);
 
-        if (board->judge_check(board,FIRST)) printf("1の王手です");
-        else if(board->judge_check(board,SECOND)) printf("0の王手です");
+        if (ref->judge_check(ref,board,FIRST)) printf("1の王手です");
+        else if(ref->judge_check(ref,board,SECOND)) printf("0の王手です");
         
-        board->display_history(board);
-        board->increment_turn_count(board);
-        board->update_turn(board);
+        ref->display_history(ref);
+        ref->increment_turn_count(ref);
+        ref->update_turn(ref);
     }
 }

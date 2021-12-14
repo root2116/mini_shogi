@@ -1,6 +1,7 @@
 #include "../include/Piece.h"
 #include "../include/game.h"
 #include "../include/Board.h"
+#include "../include/Referee.h"
 #include "../include/utility.h"
 #include <stdlib.h>
 #include <string.h>
@@ -77,14 +78,14 @@ char* get_eng_name(Piece this){
 
 
 //動かせたらtrue,動かせなかったらfalseが返る
-bool move(Piece this, Point end, Board board, bool will_promote, Piece *captured){
+bool move(Piece this, Point end, Board board,Referee ref, bool will_promote, Piece *captured){
     for(int i = 0; i < this->m->ability.length; i++){
         Point dest;
         add_vec_to_point(this->m->cur_loc,this->m->ability.directions[i],&dest);
         
         if(is_same_point(dest,end)){
-            if(!board->is_legal_move(board,this,dest)) return false;
-            if(will_promote && !board->can_promote(board,this,dest)) return false;
+            if(!ref->is_legal_move(ref,board,this,dest)) return false;
+            if(will_promote && !ref->can_promote(ref,board,this,dest)) return false;
 
 
             if(will_promote){
@@ -101,9 +102,9 @@ bool move(Piece this, Point end, Board board, bool will_promote, Piece *captured
     return false;
 }
 
-bool drop(Piece this, Point loc, Board board){
+bool drop(Piece this, Point loc, Board board, Referee ref){
 
-    if(board->is_legal_drop(board,this,loc)){
+    if(ref->is_legal_drop(ref,board,this,loc)){
 
         this->m->cur_loc.x = loc.x;
         this->m->cur_loc.y = loc.y;

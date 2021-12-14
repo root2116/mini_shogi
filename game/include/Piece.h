@@ -3,6 +3,7 @@
 
 #include "game.h"
 #include "Board.h"
+#include "Referee.h"
 #include <stdbool.h>
 
 #define GOLD_MOVE_NUM 6
@@ -44,8 +45,8 @@ typedef struct piece_t *Piece;
 
 struct piece_t {
     struct piece_member *m;
-    bool (*move)(Piece,Point,Board,bool,Piece*);
-    bool (*drop)(Piece,Point,Board);
+    bool (*move)(Piece,Point,Board,Referee,bool,Piece*);
+    bool (*drop)(Piece,Point,Board,Referee);
     void (*betray)(Piece);
     void (*set_cur_loc_outside)(Piece);
     void (*promote)(Piece);
@@ -65,8 +66,8 @@ int get_side(Piece this);
 int get_kind(Piece this);
 char *get_name(Piece this);
 char *get_eng_name(Piece this);
-bool move(Piece,Point,Board,bool,Piece*);
-bool drop(Piece,Point,Board);
+bool move(Piece,Point,Board,Referee,bool,Piece*);
+bool drop(Piece,Point,Board,Referee);
 void betray(Piece);
 void set_cur_loc_outside(Piece);
 void promote(Piece);

@@ -23,20 +23,22 @@ Player new_player(int turn){
 }
 
 //動かせない場合false
-static bool move_my_piece(Player this, Move move, Board board){
+static bool move_my_piece(Player this, Move move, Board board, Referee ref){
     
     Piece piece = board->board[move.start.y][move.start.x];
     
-
+    //存在しない駒は動かせない
+    if(piece == NULL) return false;
+    
     //自分の駒じゃないものは動かせない
     if(piece->get_side(piece) != this->turn) return false;
 
     //歩は成れるなら必ず成る
-    if(piece->get_kind(piece) == PAWN && board->can_promote(board,piece,move.end) && move.will_promote == false) return false;
+    if(piece->get_kind(piece) == PAWN && ref->can_promote(ref,board,piece,move.end) && move.will_promote == false) return false;
 
 
     Piece captured = NULL;
-    if(piece->move(piece, move.end, board, move.will_promote,&captured) == false){
+    if(piece->move(piece, move.end, board,ref, move.will_promote,&captured) == false){
         return false;
     }
 
@@ -49,11 +51,11 @@ static bool move_my_piece(Player this, Move move, Board board){
 
 }
 
-static bool drop_my_captured(Player this, Drop drop, Board board){
+static bool drop_my_captured(Player this, Drop drop, Board board, Referee ref){
     
     Piece piece = pop_captured(this, drop.kind);
     if(piece != NULL){
-        if(piece->drop(piece, drop.loc, board)) return true;
+        if(piece->drop(piece, drop.loc, board, ref)) return true;
         else{
             add_captured(this,piece);
         }

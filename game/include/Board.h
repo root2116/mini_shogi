@@ -17,22 +17,10 @@ typedef struct board_t *Board;
 
 struct board_t {
     void (*display_board)(Board,Player,Player);
-    void (*display_history)(Board);
-    void (*update_turn)(Board);
-    void (*increment_turn_count)(Board);
-    int (*get_turn)(Board);
-    int (*get_turn_count)(Board);
-    bool (*is_legal_move)(Board,Piece,Point);
     bool (*can_move)(Board, Piece, Point);
     Piece (*move_piece)(Board, Piece, Point);
-    bool (*is_legal_drop)(Board, Piece, Point);
     bool (*can_drop)(Board,Piece,Point);
     void (*drop_piece)(Board, Piece,Point);
-    bool (*can_promote)(Board,Piece,Point);
-    void (*record_board)(Board);
-    bool (*check_repetition)(Board);
-    bool (*judge_check)(Board,int);
-    bool (*check_double_pawn)(Board,Piece,Point);
     void (*copy_board)(Board);
     void (*clone_board)(Board);
     void (*restore_board)(Board this);
@@ -40,12 +28,9 @@ struct board_t {
     Piece board[5][5];
     Piece board_copy[5][5];
     Piece captured_pieces[2][10];
-    char history[151][46];
-    int turn;
-    int turn_count;
 };
 
-Board new_board(int turn);
+Board new_board();
 
 
 #endif
