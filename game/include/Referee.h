@@ -2,6 +2,7 @@
 #define INCLUDED_REFEREE
 
 #include "game.h"
+#include "list.h"
 
 #include <stdbool.h>
 
@@ -32,6 +33,7 @@ struct referee_t
     bool (*judge_check)(Referee, Board, int);
     bool (*check_double_pawn)(Referee, Board, Piece, Point);
     bool (*will_be_checked)(Referee, Board, Piece, Point);
+    List (*legal_actions)(Referee,Board);
     char history[151][46];
     int turn;
     int turn_count;

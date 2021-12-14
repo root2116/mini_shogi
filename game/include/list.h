@@ -12,6 +12,6 @@ struct list_t {
 
 List new_list();
 void add(List*, Move, Drop);
-Action pop(List);
+void free_list(List);
 
 #endif

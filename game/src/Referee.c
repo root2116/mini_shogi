@@ -1,6 +1,7 @@
 #include "../include/Referee.h"
 #include "../include/Piece.h"
 #include "../include/Board.h"
+#include "../include/list.h"
 
 #include "../include/utility.h"
 #include <stdio.h>
@@ -286,31 +287,57 @@ bool check_double_pawn(Referee this, Board board, Piece piece, Point dest){
 
 }
 
-// List legal_action(Referee this, Board board){
-//     int turn = this->get_turn(this);
+List legal_actions(Referee this, Board board){
+    int turn = this->get_turn(this);
+    List list = new_list();
+    Drop empty_drop = {0,0,NONE};
+    Move empty_move = {-1,-1,-1,-1,-1};
 
-//     for(int i = 0; i < 5; i++){
-//         for(int j = 0; j < 5; j++){
-//             Piece piece = board->board[i][j];
-//             if(piece->get_side(piece) != turn) continue;
-
-//             for (int i = 0; i < piece->m->ability.length; i++){
-//                 Point dest;
-//                 add_vec_to_point(piece->m->cur_loc, piece->m->ability.directions[i], &dest);
-
-                
-//                 if (!ref->is_legal_move(this, board, piece, dest))
-//                     break;
-//                 if (will_promote && !ref->can_promote(this, board, this, dest))
-//                     break;
-
-                    
-                
-//             }
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            Piece piece = board->board[i][j];
+            if(piece == NULL) continue;
             
-//         }
-//     }
-// }
+            if(piece->get_side(piece) != turn) continue;
+
+            for (int i = 0; i < piece->m->ability.length; i++){
+                Point dest;
+                add_vec_to_point(piece->m->cur_loc, piece->m->ability.directions[i], &dest);
+
+                
+                if (this->is_legal_move(this, board, piece, dest)){
+                    if(this->can_promote(this,piece,dest)){
+                        Move move = {piece->get_location(piece),dest, true};
+                        add(&list,move,empty_drop);
+                    }
+                    Move move = {piece->get_location(piece),dest, false};
+                    add(&list,move,empty_drop);
+                    
+                }
+                       
+            }
+            
+        }
+    }
+
+
+    for(int k = 0; k < 10; k++){
+        Piece piece = board->captured_pieces[turn][k];
+        if(piece == NULL) continue;
+
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                Point dest = {j, i};
+                if(board->can_drop(board,piece, dest)){
+                    Drop drop = {dest, piece->get_kind(piece)};
+                    add(&list,empty_move,drop);
+                }
+            }
+        }
+    }
+
+    return list;
+}
 
 Referee new_referee(int turn){
 
@@ -333,6 +360,7 @@ Referee new_referee(int turn){
     instance->judge_check = judge_check;
     instance->check_double_pawn = check_double_pawn;
     instance->will_be_checked = will_be_checked;
+    instance->legal_actions = legal_actions;
 
   
     //historyを初期化

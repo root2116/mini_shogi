@@ -4,13 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Action pop(List list){
-    
-    Action res = list->action;
-    list = list->next;
-
-    return res;
-    
+void free_list(List list){
+    while(list != NULL){
+        List old_list = list;
+        list = list->next;
+        free(old_list);
+    }
 }
 
 bool is_empty(List list){

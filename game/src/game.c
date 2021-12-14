@@ -15,7 +15,8 @@ void start_game(){
 
     Board board = new_board();
     Referee ref = new_referee(FIRST);
-    
+
+
     Player player0 = new_player(FIRST);
     Player player1 = new_player(SECOND);
 
