@@ -286,6 +286,32 @@ bool check_double_pawn(Referee this, Board board, Piece piece, Point dest){
 
 }
 
+// List legal_action(Referee this, Board board){
+//     int turn = this->get_turn(this);
+
+//     for(int i = 0; i < 5; i++){
+//         for(int j = 0; j < 5; j++){
+//             Piece piece = board->board[i][j];
+//             if(piece->get_side(piece) != turn) continue;
+
+//             for (int i = 0; i < piece->m->ability.length; i++){
+//                 Point dest;
+//                 add_vec_to_point(piece->m->cur_loc, piece->m->ability.directions[i], &dest);
+
+                
+//                 if (!ref->is_legal_move(this, board, piece, dest))
+//                     break;
+//                 if (will_promote && !ref->can_promote(this, board, this, dest))
+//                     break;
+
+                    
+                
+//             }
+            
+//         }
+//     }
+// }
+
 Referee new_referee(int turn){
 
     Referee instance = calloc(1, sizeof(*instance));

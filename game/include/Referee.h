@@ -26,7 +26,7 @@ struct referee_t
     int (*get_turn_count)(Referee);
     bool (*is_legal_move)(Referee,Board, Piece, Point);
     bool (*is_legal_drop)(Referee, Board, Piece, Point);
-    bool (*can_promote)(Referee, Board, Piece, Point);
+    bool (*can_promote)(Referee, Piece, Point);
     void (*record_board)(Referee , Board);
     bool (*check_repetition)(Referee, Board);
     bool (*judge_check)(Referee, Board, int);

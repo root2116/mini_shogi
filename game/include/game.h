@@ -48,6 +48,12 @@ typedef struct {
     PieceKind kind;
 } Drop;
 
+typedef struct {
+    Move move;
+    Drop drop;
+} Action;
+
+
 void start_game();
 
 #endif

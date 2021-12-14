@@ -29,12 +29,12 @@ static bool move_my_piece(Player this, Move move, Board board, Referee ref){
     
     //存在しない駒は動かせない
     if(piece == NULL) return false;
-    
+
     //自分の駒じゃないものは動かせない
     if(piece->get_side(piece) != this->turn) return false;
 
     //歩は成れるなら必ず成る
-    if(piece->get_kind(piece) == PAWN && ref->can_promote(ref,board,piece,move.end) && move.will_promote == false) return false;
+    if(piece->get_kind(piece) == PAWN && ref->can_promote(ref,piece,move.end) && move.will_promote == false) return false;
 
 
     Piece captured = NULL;

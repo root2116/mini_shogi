@@ -3,10 +3,15 @@
 #include "../include/Player.h"
 #include "../include/Referee.h"
 #include "../include/utility.h"
+#include "../include/list.h"
 
 #include <stdio.h>
 
 void start_game(){
+
+    
+    
+
 
     Board board = new_board();
     Referee ref = new_referee(FIRST);
@@ -22,9 +27,8 @@ void start_game(){
     ref->record_board(ref,board);
 
     char input[6] = "00000";
-
     Move move = {0, 0, 0, 0, 0};
-    Drop drop = {0, 0, NONE};
+    Drop drop = {0, 0, PAWN};
 
     while (1)
     {   
