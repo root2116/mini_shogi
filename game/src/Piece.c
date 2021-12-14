@@ -35,6 +35,7 @@ Piece new_piece(){
 
 
     piece->betray = betray;
+    piece->set_cur_loc_outside = set_cur_loc_outside;
     piece->move = move;
     piece->drop = drop;
     piece->promote = promote;
@@ -102,7 +103,7 @@ bool move(Piece this, Point end, Board board, bool will_promote, Piece *captured
 
 bool drop(Piece this, Point loc, Board board){
 
-    if(board->can_drop(board,this,loc)){
+    if(board->is_legal_drop(board,this,loc)){
 
         this->m->cur_loc.x = loc.x;
         this->m->cur_loc.y = loc.y;
@@ -132,6 +133,11 @@ void betray(Piece this){
     }
 
 
+}
+
+void set_cur_loc_outside(Piece this){
+    this->m->cur_loc.x = -1;
+    this->m->cur_loc.y = -1;
 }
 
 void promote(Piece this){

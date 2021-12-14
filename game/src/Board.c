@@ -37,6 +37,7 @@ bool is_on_enemy_area(int side,Point p){
 }
 
 Piece find_clone_piece(Board this, Piece piece){
+    
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             Piece target = this->board[i][j];
@@ -46,14 +47,26 @@ Piece find_clone_piece(Board this, Piece piece){
             }
         }
     }
+
+    return NULL;
+    
+
+    
 }
+
 //次の盤面で王手をかけられるならtrue,かけられないならfalse
 bool will_be_checked(Board this, Piece piece, Point dest){
     this->copy_board(this);
     this->clone_board(this);
 
     Piece clone_piece = find_clone_piece(this,piece);
-    this->move_piece(this, clone_piece, dest);
+    if(clone_piece == NULL){
+        clone_piece = piece->clone_piece(piece);
+        this->drop_piece(this,clone_piece,dest);
+    }else{
+        this->move_piece(this, clone_piece, dest);
+    }
+    
 
     clone_piece->m->cur_loc.x = dest.x;
     clone_piece->m->cur_loc.y = dest.y;
@@ -206,12 +219,21 @@ static Piece move_piece(Board this, Piece piece, Point dest){
     Piece captured = this->board[dest.y][dest.x];
     if(captured != NULL){
         captured->betray(captured);
+        captured->set_cur_loc_outside(captured);
     }
 
     this->board[dest.y][dest.x] = piece;
 
     return captured;
 
+
+}
+
+static bool is_legal_drop(Board this, Piece piece, Point dest){
+    if(this->can_drop(this,piece,dest) == false) return false;
+
+    if(will_be_checked(this,piece,dest)) return false;
+    else return true;
 
 }
 
@@ -476,6 +498,7 @@ Board new_board(int turn)
     instance->is_legal_move = is_legal_move;
     instance->can_move = can_move;
     instance->move_piece = move_piece;
+    instance->is_legal_drop = is_legal_drop;
     instance->can_drop = can_drop;
     instance->drop_piece = drop_piece;
     instance->can_promote = can_promote;

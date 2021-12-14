@@ -47,6 +47,7 @@ struct piece_t {
     bool (*move)(Piece,Point,Board,bool,Piece*);
     bool (*drop)(Piece,Point,Board);
     void (*betray)(Piece);
+    void (*set_cur_loc_outside)(Piece);
     void (*promote)(Piece);
     Piece (*clone_piece)(Piece);
     void (*free_piece)(Piece);
@@ -67,6 +68,7 @@ char *get_eng_name(Piece this);
 bool move(Piece,Point,Board,bool,Piece*);
 bool drop(Piece,Point,Board);
 void betray(Piece);
+void set_cur_loc_outside(Piece);
 void promote(Piece);
 void demote(Piece);
 Piece clone_piece(Piece);

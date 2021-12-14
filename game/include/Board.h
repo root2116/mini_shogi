@@ -25,6 +25,7 @@ struct board_t {
     bool (*is_legal_move)(Board,Piece,Point);
     bool (*can_move)(Board, Piece, Point);
     Piece (*move_piece)(Board, Piece, Point);
+    bool (*is_legal_drop)(Board, Piece, Point);
     bool (*can_drop)(Board,Piece,Point);
     void (*drop_piece)(Board, Piece,Point);
     bool (*can_promote)(Board,Piece,Point);
