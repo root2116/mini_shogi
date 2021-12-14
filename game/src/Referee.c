@@ -108,7 +108,7 @@ static bool is_legal_drop(Referee this, Board board, Piece piece, Point dest){
 static bool can_promote(Board this, Piece piece, Point dest){
     //成れるかどうか判定する
     if (piece->get_side(piece) == FIRST){ //PieceがFistなら
-        if((dest.y == 0 || (piece->get_location(piece).y == 0)){ //敵陣に移動or敵陣から移動
+        if(dest.y == 0 || piece->get_location(piece).y == 0){ //敵陣に移動or敵陣から移動
             return true; //成る
         }
         else
@@ -116,7 +116,7 @@ static bool can_promote(Board this, Piece piece, Point dest){
 
     }
     else if (piece->get_side(piece) == SECOND){ //PieceがFistなら
-        if((dest.y == 4 || (piece->get_location(piece).y == 4)) { //敵陣に移動or敵陣から移動
+        if(dest.y == 4 || piece->get_location(piece).y == 4) { //敵陣に移動or敵陣から移動
             return true; //成る
         }
         else
