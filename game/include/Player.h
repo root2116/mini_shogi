@@ -23,5 +23,7 @@ static bool move_my_piece(Player , Move , Board ,Referee);
 static bool drop_my_captured(Player , Drop , Board ,Referee);
 Piece pop_captured(Player, PieceKind );
 void add_captured(Player, Piece );
+Piece get_captured(Player this, PieceKind kind);
+void remove_captured(Player this, PieceKind kind);
 
 #endif

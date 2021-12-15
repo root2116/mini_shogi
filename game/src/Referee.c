@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Piece find_clone_piece(Board this, Piece piece){
+Piece find_clone_piece_from_board(Board this, Piece piece){
     
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
@@ -26,14 +26,27 @@ Piece find_clone_piece(Board this, Piece piece){
     
 }
 
+Piece pop_clone_piece_from_captured_pieces(Board this, Piece piece){
+    for(int i = 0; i < 10; i++){
+        int side = piece->get_side(piece);
+        Piece clone = this->captured_pieces[side][i];
+        if(clone == NULL) continue;
+
+        if(clone->get_kind(clone) == piece->get_kind(piece)){
+            this->captured_pieces[side][i] = NULL;
+            return clone;
+        }
+    }
+}
+
 //次の盤面で王手をかけられるならtrue,かけられないならfalse
 bool will_be_checked(Referee this, Board board, Piece piece, Point dest){
-    board->copy_board(board);
+    board->push_board(board);
     board->clone_board(board);
 
-    Piece clone_piece = find_clone_piece(board,piece);
+    Piece clone_piece = find_clone_piece_from_board(board,piece);
     if(clone_piece == NULL){
-        clone_piece = piece->clone_piece(piece);
+        clone_piece = pop_clone_piece_from_captured_pieces(board, piece);
         board->drop_piece(board,clone_piece,dest);
     }else{
         board->move_piece(board, clone_piece, dest);
@@ -46,16 +59,40 @@ bool will_be_checked(Referee this, Board board, Piece piece, Point dest){
     if (this->judge_check(this,board, clone_piece->get_side(clone_piece)))
     {
         
-        board->restore_board(board);
+        board->pop_board(board);
         return true;
     }
     else
     {
-        board->restore_board(board);
+        board->pop_board(board);
         return false;
     }
 }
 
+//次の盤面で相手を詰ましてしまうか？
+bool will_checkmate(Referee this, Board board, Piece piece, Point dest){
+    board->push_board(board);
+    board->clone_board(board);
+
+    Piece clone_piece = find_clone_piece_from_board(board,piece);
+    if(clone_piece == NULL){
+        clone_piece = pop_clone_piece_from_captured_pieces(board,piece);
+        board->drop_piece(board,clone_piece,dest);
+    }else{
+        board->move_piece(board, clone_piece, dest);
+    }
+
+    clone_piece->m->cur_loc.x = dest.x;
+    clone_piece->m->cur_loc.y = dest.y;
+
+    if(this->is_checkmated(this,board,1 - clone_piece->get_side(clone_piece))){
+        board->pop_board(board);
+        return true;
+    }else{
+        board->pop_board(board);
+        return false;
+    }
+}
 
 
 static void display_history(Referee this)
@@ -100,6 +137,10 @@ static bool is_legal_drop(Referee this, Board board, Piece piece, Point dest){
 
     
     if(this->will_be_checked(this,board,piece,dest)) return false;
+
+    //歩で詰ますことはできない
+    if(piece->get_kind(piece) == PAWN && this->will_checkmate(this,board,piece,dest)) return false;
+    
     
     
     return true;
@@ -328,7 +369,7 @@ List legal_actions(Referee this, Board board, int side){
         for(int i = 0; i < 5; i++){
             for(int j = 0; j < 5; j++){
                 Point dest = {j, i};
-                if(board->can_drop(board,piece, dest)){
+                if(this->is_legal_drop(this,board,piece,dest)){
                     Drop drop = {dest, piece->get_kind(piece)};
                     add(&list,empty_move,drop);
                 }
@@ -371,6 +412,7 @@ Referee new_referee(int turn){
     instance->judge_check = judge_check;
     instance->check_double_pawn = check_double_pawn;
     instance->will_be_checked = will_be_checked;
+    instance->will_checkmate = will_checkmate;
     instance->legal_actions = legal_actions;
     instance->is_checkmated = is_checkmated;
 

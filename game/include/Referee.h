@@ -33,6 +33,7 @@ struct referee_t
     bool (*judge_check)(Referee, Board, int);
     bool (*check_double_pawn)(Referee, Board, Piece, Point);
     bool (*will_be_checked)(Referee, Board, Piece, Point);
+    bool (*will_checkmate)(Referee, Board, Piece, Point);
     List (*legal_actions)(Referee,Board, int);
     bool (*is_checkmated)(Referee, Board, int);
     char history[151][46];

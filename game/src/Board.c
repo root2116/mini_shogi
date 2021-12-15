@@ -182,35 +182,36 @@ static void drop_piece(Board this,Piece piece, Point dest){
 }
 
 
-
-void copy_board(Board this){
-    for(int i = 0; i < 5; i++){
-        for(int j = 0; j < 5; j++){
-            this->board_copy[i][j] = this->board[i][j];
-        }
-    }
-}
-
 void clone_board(Board this){
 
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
-            this->board[i][j] = clone_piece(this->board_copy[i][j]);
-        }
-    }
-
-}
-
-void restore_board(Board this){
-
-    this->free_board(this);
-    for(int i = 0; i < 5; i++){
-        for(int j = 0; j < 5; j++){
+            Piece piece = this->stack.boards[this->stack.top][i][j];
+            if(piece == NULL){
+                this->board[i][j] = NULL;
+            }else{
+                this->board[i][j] = piece->clone_piece(piece);
+            }
             
-            this->board[i][j] = this->board_copy[i][j];
         }
     }
+
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < 10; j++){
+            Piece piece = this->stack.captured_pieces[this->stack.top][i][j];
+            if(piece == NULL){
+                this->captured_pieces[i][j] = NULL;
+            }else{
+                this->captured_pieces[i][j] = piece->clone_piece(piece);
+            }
+            
+        }
+    }
+
 }
+
+
+
 
 void free_board(Board this){
     for(int i = 0; i < 5; i++){
@@ -220,6 +221,62 @@ void free_board(Board this){
             this->board[i][j]->free_piece(this->board[i][j]);
         }
     }
+
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < 10; j++){
+            if(this->captured_pieces[i][j] == NULL) continue;
+
+            this->captured_pieces[i][j]->free_piece(this->captured_pieces[i][j]);
+        }
+    }
+}
+
+void push_board(Board this){
+
+    if(this->stack.top >= MAX_STACK - 1){
+        printf("BoardStack is alreadly full.");
+    }else{
+        this->stack.top++;
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                this->stack.boards[this->stack.top][i][j] = this->board[i][j];
+            }
+        }
+
+        for(int i = 0; i < 2; i++){
+            for(int j = 0; j < 10; j++){
+                this->stack.captured_pieces[this->stack.top][i][j] = this->captured_pieces[i][j];
+            }
+        }
+        
+    }
+    
+    
+}
+
+void pop_board(Board this){
+
+    if(this->stack.top <= -1){
+        printf("BoardStack is emtpy.");
+    }else{
+        free_board(this);
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                this->board[i][j] = this->stack.boards[this->stack.top][i][j];
+                this->stack.boards[this->stack.top][i][j] = NULL;
+            }
+        }
+
+        for(int i = 0; i < 2; i++){
+            for(int j = 0; j < 10; j++){
+                this->captured_pieces[i][j] = this->stack.captured_pieces[this->stack.top][i][j];
+                this->stack.captured_pieces[this->stack.top][i][j] = NULL;
+            }
+        }
+        
+        this->stack.top--;
+    }
+    
 }
 
 
@@ -233,10 +290,11 @@ Board new_board()
     instance->move_piece = move_piece;
     instance->can_drop = can_drop;
     instance->drop_piece = drop_piece;
-    instance->copy_board = copy_board;
     instance->clone_board = clone_board;
-    instance->restore_board = restore_board;
     instance->free_board = free_board;
+    instance->push_board = push_board;
+    instance->pop_board = pop_board;
+
     
 
     Piece king0 = new_king(FIRST);
@@ -255,19 +313,27 @@ Board new_board()
 
     Piece pieces[PIECE_NUM] = {king0,bishop0,rook0,gold0,silver0,pawn0,king1,bishop1,rook1,gold1,silver1,pawn1};
 
-     //boardを初期化
+     //boardとstackを初期化
+    instance->stack.top = -1;
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             instance->board[i][j] = NULL;
-            instance->board_copy[i][j] = NULL;
+            for(int k = 0; k < MAX_STACK; k++){
+                instance->stack.boards[k][i][j] = NULL;
+            }
         }
     }  
+
+    
 
     
     //持ち駒を初期化
     for(int i = 0; i < 2; i++){
         for(int j = 0; j < 10; j++){
             instance->captured_pieces[i][j] = NULL;
+            for(int k = 0; k < MAX_STACK; k++){
+                instance->stack.captured_pieces[k][i][j] = NULL;
+            }
         }
     }
     

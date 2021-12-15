@@ -53,9 +53,12 @@ static bool move_my_piece(Player this, Move move, Board board, Referee ref){
 
 static bool drop_my_captured(Player this, Drop drop, Board board, Referee ref){
     
-    Piece piece = pop_captured(this, drop.kind);
+    Piece piece = get_captured(this, drop.kind);
     if(piece != NULL){
-        if(piece->drop(piece, drop.loc, board, ref)) return true;
+        if(piece->drop(piece, drop.loc, board, ref)){
+            remove_captured(this,piece->get_kind(piece));
+            return true;
+        }
         else{
             add_captured(this,piece);
         }
@@ -70,8 +73,11 @@ static bool drop_my_captured(Player this, Drop drop, Board board, Referee ref){
 
 Piece pop_captured(Player this,PieceKind kind){
     for(int i = 0; i < MAX_CAPTURED; i++){
-        if(this->captured_pieces[i]->get_kind(this->captured_pieces[i]) == kind){
-            Piece res = this->captured_pieces[i];
+        Piece piece = this->captured_pieces[i];
+        if(piece == NULL) continue;
+
+        if(piece->get_kind(piece) == kind){
+            Piece res = piece;
             this->captured_pieces[i] = NULL;
             return res;
         } 
@@ -79,6 +85,28 @@ Piece pop_captured(Player this,PieceKind kind){
     return NULL;
 }
 
+Piece get_captured(Player this,PieceKind kind){
+    for(int i = 0; i < MAX_CAPTURED; i++){
+        Piece piece = this->captured_pieces[i];
+        if(piece == NULL) continue;
+        if(piece->get_kind(piece) == kind){
+            Piece res = piece;
+            return res;
+        } 
+    }
+    return NULL;
+}
+
+void remove_captured(Player this, PieceKind kind){
+    for(int i = 0; i < MAX_CAPTURED; i++){
+        Piece piece = this->captured_pieces[i];
+        if(piece == NULL) continue;
+
+        if(piece->get_kind(piece) == kind){
+            this->captured_pieces[i] = NULL;
+        } 
+    }
+}
 void add_captured(Player this, Piece piece){
 
     for(int i = 0; i < MAX_CAPTURED; i++ ){
