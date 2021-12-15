@@ -65,14 +65,19 @@ void start_game(){
             }
         }
 
+        
+        
+        
+        ref->increment_turn_count(ref);
         ref->record_board(ref,board);
 
         if (ref->judge_check(ref,board,FIRST)) printf("1の王手です");
         else if(ref->judge_check(ref,board,SECOND)) printf("0の王手です");
-        
+
+        if (ref->check_repetition(ref, board)) printf("千日手です");
+        else printf("千日手ではありません");
         
         ref->display_history(ref);
-        ref->increment_turn_count(ref);
         ref->update_turn(ref);
     }
 }

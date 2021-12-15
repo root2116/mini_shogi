@@ -227,12 +227,64 @@ static void record_board(Referee this, Board board){
 
 //千日手を判定する
 //現在の盤面と持ち駒が４度目以上ならTrue、そうでないならFalseを返す
-//注意としてそのターンのrecord_boardした後に使う
 static bool check_repetition(Referee this, Board board){
+    char now[46] = "";
+
+    for (int i = 0; i < 5; i++){
+        for (int j = 0; j < 5; j++){
+            
+            Piece piece = board->board[i][j];
+
+            if(piece !=NULL){
+                if(piece->get_side(piece) == FIRST){
+                    now[5 * i + j] = piece->get_eng_name(piece)[0];
+                }else if(piece->get_side(piece) == SECOND){
+                    now[5 * i + j] = piece->get_eng_name(piece)[0]+32;
+                }
+            }else{
+                now[5 * i + j] = '.';
+            }
+        }
+    }
+    for (int i = 0; i < 10; i++){
+        Piece piece0 = board->captured_pieces[FIRST][i];
+        Piece piece1 = board->captured_pieces[SECOND][i];
+
+        if(piece0 !=NULL){
+            now[25 + i] = piece0->get_eng_name(piece0)[0];
+        }else{
+            now[25 + i] = '.';
+        }
+
+        if(piece1 !=NULL){
+            now[35 + i] = piece1->get_eng_name(piece1)[0];
+        }else{
+            now[35 + i] = '.';
+        }
+        
+    }
+
+    for (int i = 0; i < 10; i++){
+        for (int j = i+1; j < 10; j++){
+            if (now[25+i] > now[25+j]){
+                char tmp = now[25+i];
+                now[25+i] = now[25+j];
+                now[25+j] = tmp;
+            }
+
+            if (now[35+i] > now[35+j]){
+                char tmp = now[35+i];
+                now[35+i] = now[35+j];
+                now[35+j] = tmp;
+            }
+        }
+    }
+
+
     int repetition_count = 1;
 
-    for (int i=1; i <= this->turn_count; i++){
-        if (strcmp(this->history[i], this->history[this->turn_count]) == 0){
+    for (int i=1; i < this->turn_count; i++){
+        if (strcmp(this->history[i], now) == 0){
             repetition_count += 1;
         }
     }
