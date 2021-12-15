@@ -85,6 +85,7 @@ bool move(Piece this, Point end, Board board,Referee ref, bool will_promote, Pie
         
         if(is_same_point(dest,end)){
             if(!ref->is_legal_move(ref,board,this,dest)) return false;
+            if(will_promote && ((this->get_kind(this) == GOLD) || (this->get_kind(this) == KING))) return false;
             if(will_promote && !ref->can_promote(ref,this,dest)) return false;
 
 
