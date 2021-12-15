@@ -34,8 +34,10 @@ void start_game(){
     while (1)
     {   
         
+        if(ref->is_checkmated(ref,board,ref->get_turn(ref))){
+            printf("Checkmate!\n");
+        }
         
-
         init_string(input,'0');
 
         board->display_board(board, player0, player1);
@@ -67,6 +69,7 @@ void start_game(){
 
         if (ref->judge_check(ref,board,FIRST)) printf("1の王手です");
         else if(ref->judge_check(ref,board,SECOND)) printf("0の王手です");
+        
         
         ref->display_history(ref);
         ref->increment_turn_count(ref);

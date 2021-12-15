@@ -13,5 +13,6 @@ struct list_t {
 List new_list();
 void add(List*, Move, Drop);
 void free_list(List);
+bool is_empty(List);
 
 #endif

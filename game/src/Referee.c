@@ -287,8 +287,8 @@ bool check_double_pawn(Referee this, Board board, Piece piece, Point dest){
 
 }
 
-List legal_actions(Referee this, Board board){
-    int turn = this->get_turn(this);
+List legal_actions(Referee this, Board board, int side){
+    
     List list = new_list();
     Drop empty_drop = {0,0,NONE};
     Move empty_move = {-1,-1,-1,-1,-1};
@@ -297,8 +297,8 @@ List legal_actions(Referee this, Board board){
         for(int j = 0; j < 5; j++){
             Piece piece = board->board[i][j];
             if(piece == NULL) continue;
-            
-            if(piece->get_side(piece) != turn) continue;
+
+            if(piece->get_side(piece) != side) continue;
 
             for (int i = 0; i < piece->m->ability.length; i++){
                 Point dest;
@@ -322,7 +322,7 @@ List legal_actions(Referee this, Board board){
 
 
     for(int k = 0; k < 10; k++){
-        Piece piece = board->captured_pieces[turn][k];
+        Piece piece = board->captured_pieces[side][k];
         if(piece == NULL) continue;
 
         for(int i = 0; i < 5; i++){
@@ -337,6 +337,17 @@ List legal_actions(Referee this, Board board){
     }
 
     return list;
+}
+
+bool is_checkmated(Referee this, Board board, int side){
+    List list = legal_actions(this, board, side);
+    if(is_empty(list)){
+        free_list(list);
+        return true;
+    }else{
+        free_list(list);
+        return false;
+    }
 }
 
 Referee new_referee(int turn){
@@ -361,6 +372,7 @@ Referee new_referee(int turn){
     instance->check_double_pawn = check_double_pawn;
     instance->will_be_checked = will_be_checked;
     instance->legal_actions = legal_actions;
+    instance->is_checkmated = is_checkmated;
 
   
     //historyを初期化
