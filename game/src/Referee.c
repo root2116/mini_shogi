@@ -9,87 +9,38 @@
 #include <stdlib.h>
 #include <string.h>
 
-Piece find_clone_piece_from_board(Board this, Piece piece){
-    
-    for(int i = 0; i < 5; i++){
-        for(int j = 0; j < 5; j++){
-            Piece target = this->board[i][j];
-            if(target == NULL) continue;
-            if(is_same_point(target->get_location(target),piece->get_location(piece))){
-                return target;
-            }
-        }
-    }
 
-    return NULL;
-    
-    
-}
 
-Piece pop_clone_piece_from_captured_pieces(Board this, Piece piece){
-    for(int i = 0; i < 10; i++){
-        int side = piece->get_side(piece);
-        Piece clone = this->captured_pieces[side][i];
-        if(clone == NULL) continue;
 
-        if(clone->get_kind(clone) == piece->get_kind(piece)){
-            this->captured_pieces[side][i] = NULL;
-            return clone;
-        }
-    }
-}
 
 //次の盤面で王手をかけられるならtrue,かけられないならfalse
 bool will_be_checked(Referee this, Board board, Piece piece, Point dest){
-    board->push_board(board);
-    board->clone_board(board);
-
-    Piece clone_piece = find_clone_piece_from_board(board,piece);
-    if(clone_piece == NULL){
-        clone_piece = pop_clone_piece_from_captured_pieces(board, piece);
-        board->drop_piece(board,clone_piece,dest);
-    }else{
-        board->move_piece(board, clone_piece, dest);
-    }
     
+    board->create_next_board(board,piece,dest);
 
-    clone_piece->m->cur_loc.x = dest.x;
-    clone_piece->m->cur_loc.y = dest.y;
-
-    if (this->judge_check(this,board, clone_piece->get_side(clone_piece)))
+    if (this->judge_check(this,board, piece->get_side(piece)))
     {
         
-        board->pop_board(board);
+        board->restore_board(board);
         return true;
     }
     else
     {
-        board->pop_board(board);
+        board->restore_board(board);
         return false;
     }
 }
 
 //次の盤面で相手を詰ましてしまうか？
 bool will_checkmate(Referee this, Board board, Piece piece, Point dest){
-    board->push_board(board);
-    board->clone_board(board);
+    
+    board->create_next_board(board,piece,dest);
 
-    Piece clone_piece = find_clone_piece_from_board(board,piece);
-    if(clone_piece == NULL){
-        clone_piece = pop_clone_piece_from_captured_pieces(board,piece);
-        board->drop_piece(board,clone_piece,dest);
-    }else{
-        board->move_piece(board, clone_piece, dest);
-    }
-
-    clone_piece->m->cur_loc.x = dest.x;
-    clone_piece->m->cur_loc.y = dest.y;
-
-    if(this->is_checkmated(this,board,1 - clone_piece->get_side(clone_piece))){
-        board->pop_board(board);
+    if(this->is_checkmated(this,board,1 - piece->get_side(piece))){
+        board->restore_board(board);
         return true;
     }else{
-        board->pop_board(board);
+        board->restore_board(board);
         return false;
     }
 }
@@ -125,7 +76,29 @@ static bool is_legal_move(Referee this, Board board, Piece piece, Point dest){
     if(board->can_move(board,piece,dest) == false) return false;
 
     if(this->will_be_checked(this,board,piece,dest)) return false;
-    else return true;
+
+    board->create_next_board(board,piece,dest);
+
+
+    if(this->check_repetition(this,board)){
+        
+        if(this->judge_check(this,board,1 - piece->get_side(piece))){
+            board->restore_board(board);
+            return false;
+        }else if(piece->get_side(piece) == SECOND){
+            board->restore_board(board);
+            return true;
+        }else{
+            board->restore_board(board);
+            return false;
+        }
+        
+    }
+    
+    board->restore_board(board);
+
+
+    return true;
 }
 
 
@@ -142,6 +115,23 @@ static bool is_legal_drop(Referee this, Board board, Piece piece, Point dest){
     if(piece->get_kind(piece) == PAWN && this->will_checkmate(this,board,piece,dest)) return false;
     
     
+    board->create_next_board(board,piece,dest);
+
+    if(this->check_repetition(this,board)){
+
+        if(this->judge_check(this,board,1 - piece->get_side(piece))){
+            board->restore_board(board);
+            return false;
+        }else if(piece->get_side(piece) == SECOND){
+            board->restore_board(board);
+            return true;
+        }else{
+            board->restore_board(board);
+            return false;
+        }
+    }
+
+    board->restore_board(board);
     
     return true;
 

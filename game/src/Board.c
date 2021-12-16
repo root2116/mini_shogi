@@ -35,6 +35,36 @@ bool is_on_enemy_area(int side,Point p){
     return false;
 }
 
+Piece find_clone_piece_from_board(Board this, Piece piece){
+    
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            Piece target = this->board[i][j];
+            if(target == NULL) continue;
+            if(is_same_point(target->get_location(target),piece->get_location(piece))){
+                return target;
+            }
+        }
+    }
+
+    return NULL;
+    
+    
+}
+
+Piece pop_clone_piece_from_captured_pieces(Board this, Piece piece){
+    for(int i = 0; i < 10; i++){
+        int side = piece->get_side(piece);
+        Piece clone = this->captured_pieces[side][i];
+        if(clone == NULL) continue;
+
+        if(clone->get_kind(clone) == piece->get_kind(piece)){
+            this->captured_pieces[side][i] = NULL;
+            return clone;
+        }
+    }
+}
+
 
 static void display_board(Board this,Player player0, Player player1){
     printf("\n");
@@ -181,6 +211,22 @@ static void drop_piece(Board this,Piece piece, Point dest){
 
 }
 
+void create_next_board(Board this, Piece piece, Point dest){
+    this->push_board(this);
+    this->clone_board(this);
+
+    Piece clone_piece = find_clone_piece_from_board(this, piece);
+    if (clone_piece == NULL){
+        clone_piece = pop_clone_piece_from_captured_pieces(this, piece);
+        this->drop_piece(this, clone_piece, dest);
+    }else{
+        this->move_piece(this, clone_piece, dest);
+    }
+
+    clone_piece->m->cur_loc.x = dest.x;
+    clone_piece->m->cur_loc.y = dest.y;
+}
+
 
 void clone_board(Board this){
 
@@ -254,7 +300,7 @@ void push_board(Board this){
     
 }
 
-void pop_board(Board this){
+void restore_board(Board this){
 
     if(this->stack.top <= -1){
         printf("BoardStack is emtpy.");
@@ -290,10 +336,11 @@ Board new_board()
     instance->move_piece = move_piece;
     instance->can_drop = can_drop;
     instance->drop_piece = drop_piece;
+    instance->create_next_board = create_next_board;
     instance->clone_board = clone_board;
     instance->free_board = free_board;
     instance->push_board = push_board;
-    instance->pop_board = pop_board;
+    instance->restore_board = restore_board;
 
     
 

@@ -35,10 +35,11 @@ struct board_t {
     Piece (*move_piece)(Board, Piece, Point);
     bool (*can_drop)(Board,Piece,Point);
     void (*drop_piece)(Board, Piece,Point);
+    void (*create_next_board)(Board, Piece, Point);
     void (*clone_board)(Board);
     void (*free_board)(Board);
     void (*push_board)(Board);
-    void (*pop_board)(Board);
+    void (*restore_board)(Board);
     Piece board[5][5];
     BoardStack stack;
     Piece board_copy[5][5];
