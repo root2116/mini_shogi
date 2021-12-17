@@ -5,13 +5,13 @@
 #include "../include/utility.h"
 #include "../include/list.h"
 
+#include "../../ai/include/game_ai.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void start_game(){
 
     
-    
-
 
     Board board = new_board();
     Referee ref = new_referee(FIRST);
@@ -27,7 +27,7 @@ void start_game(){
 
     ref->record_board(ref,board);
 
-    char input[6] = "00000";
+    char *input = calloc(6,sizeof(char));
     Move move = {0, 0, 0, 0, 0};
     Drop drop = {0, 0, PAWN};
 
@@ -36,16 +36,24 @@ void start_game(){
         
         if(ref->is_checkmated(ref,board,ref->get_turn(ref))){
             printf("Checkmate!\n");
+            break;
         }
         
-        init_string(input,'0');
+        init_string(input,'\0');
 
         board->display_board(board, player0, player1);
         printf("%d's turn\n", ref->get_turn(ref));
 
-        scanf("%s", input);
-
         int turn = ref->get_turn(ref);
+        
+        if(turn == FIRST){
+            scanf("%s", input);
+        }else{
+            random_ai(ref,board,input);
+        }
+        
+
+        
         if (input[2] >= '0' && input[2] <= '9')
         {
             parse_move(input, &move);

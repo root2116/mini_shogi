@@ -1,5 +1,6 @@
 #include "../include/game.h"
 #include "../include/Piece.h"
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -105,3 +106,53 @@ void init_string(char* str,char init){
         str++;
     }
 }
+
+
+void convert_action_into_string(Action action, char* str){
+    
+
+    if(action.drop.kind == NONE){
+        Point start = action.move.start;
+        Point end = action.move.end;
+
+        str[0] = '5' - start.y;
+        str[1] = 'A' + start.x;
+        str[2] = '5' - end.y;
+        str[3] = 'A' + end.x;
+
+        if(action.move.will_promote){
+            str[4] = 'N';
+        }
+
+
+
+    }else{
+        Point loc = action.drop.loc;
+        PieceKind kind = action.drop.kind;
+
+        str[0] = '5' - loc.y;
+        str[1] = 'A' + loc.x;
+        switch (kind)
+        {
+        case BISHOP:
+            strcpy(&str[2],"KK");
+            break;
+        case ROOK:
+            strcpy(&str[2],"HI");
+            break;
+        case GOLD:
+            strcpy(&str[2],"KI");
+            break;
+        case SILVER:
+            strcpy(&str[2],"GI");
+            break;
+        case PAWN:
+            strcpy(&str[2],"FU");
+            break;
+        default:
+            break;
+        }
+
+    }
+}
+

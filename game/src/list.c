@@ -17,6 +17,16 @@ bool is_empty(List list){
     else return false;
 }
 
+int length(List list){
+    int count = 0;
+    while(list != NULL){
+        count++;
+        list = list->next;
+    }
+
+    return count;
+}
+
 void add(List *list, Move move, Drop drop){
     if(*list == NULL){
         List new_list = calloc(1, sizeof(*new_list));
