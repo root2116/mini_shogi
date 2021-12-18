@@ -1,10 +1,15 @@
 #ifndef INCLUDED_REFEREE
 #define INCLUDED_REFEREE
 
-#include "game.h"
-#include "list.h"
+
 
 #include <stdbool.h>
+
+struct point_t;
+typedef struct point_t Point;
+
+struct list_t;
+typedef struct list_t *List;
 
 struct piece_t;
 typedef struct piece_t *Piece;
@@ -36,7 +41,9 @@ struct referee_t
     bool (*will_checkmate)(Referee, Board, Piece, Point);
     List (*legal_actions)(Referee,Board, int);
     bool (*is_checkmated)(Referee, Board, int);
-    char history[151][46];
+    Referee (*clone_referee)(Referee);
+    void (*free_referee)(Referee);
+    char history[152][46];
     int turn;
     int turn_count;
 };

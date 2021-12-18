@@ -1,8 +1,8 @@
 #ifndef INCLUDED_SILVER
 #define INCLUDED_SILVER
 
-#include "Piece.h"
-#include "Board.h"
+struct piece_t;
+typedef struct piece_t *Piece;
 
 Piece new_silver(int side);
 

@@ -1,9 +1,20 @@
 #ifndef INCLUDED_PIECE
 #define INCLUDED_PIECE
 
-#include "game.h"
-#include "Board.h"
-#include "Referee.h"
+#include "Game.h"
+
+struct referee_t;
+typedef struct referee_t *Referee;
+
+struct board_t;
+typedef struct board_t *Board;
+
+struct vector_t;
+typedef struct vector_t Vector;
+
+struct point_t;
+typedef struct point_t Point;
+
 #include <stdbool.h>
 
 #define GOLD_MOVE_NUM 6

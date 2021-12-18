@@ -1,8 +1,8 @@
-#include "../include/Piece.h"
-#include "../include/game.h"
-#include "../include/Board.h"
-#include "../include/Referee.h"
-#include "../include/utility.h"
+#include "Piece.h"
+#include "Game.h"
+#include "Board.h"
+#include "Referee.h"
+#include "utility.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -161,9 +161,9 @@ Piece clone_piece(Piece this){
     if(this == NULL) return NULL;
 
     Piece piece = new_piece();
-    piece->m->name = calloc(3,sizeof(char));
-    piece->m->eng_name = calloc(12,sizeof(char));
-    piece->m->idle_eng_name = calloc(12,sizeof(char));
+    piece->m->name = malloc(3*sizeof(char));
+    piece->m->eng_name = malloc(12*sizeof(char));
+    piece->m->idle_eng_name = malloc(12*sizeof(char));
     strcpy(piece->m->name,this->m->name);
     strcpy(piece->m->eng_name,this->m->eng_name);
     strcpy(piece->m->idle_eng_name,this->m->idle_eng_name);
@@ -188,11 +188,13 @@ void free_piece(Piece this){
     free(this->m->idle_eng_name);
     free(this->m->ability.directions);
     free(this->m->idle_ability.directions);
+    free(this->m);
+    free(this);
 }
 
 void copy_ability(Ability *original, Ability *dest){
     
-    Vector *directions = calloc(original->length,sizeof(Vector));
+    Vector *directions = malloc(original->length*sizeof(Vector));
 
     for(int i = 0; i < original->length; i++){
         directions[i].x = original->directions[i].x;

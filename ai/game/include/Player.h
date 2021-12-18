@@ -1,15 +1,32 @@
 #ifndef INCLUDED_PLAYER
 #define INCLUDED_PLAYER
 
-#include "Piece.h"
-#include "game.h"
-#include "Board.h"
-#include "Referee.h"
+
+#include <stdbool.h>
 
 #define MAX_CAPTURED 10
 
+
+struct piece_t;
+typedef struct piece_t *Piece;
+
+struct board_t;
+typedef struct board_t *Board;
+
+struct move_t;
+typedef struct move_t Move;
+
+struct drop_t;
+typedef struct drop_t Drop;
+
 struct player_t;
 typedef struct player_t *Player;
+
+typedef enum piece_kind PieceKind;
+
+struct referee_t;
+typedef struct referee_t *Referee;
+
 
 struct player_t {
     bool (*move_my_piece)(Player,Move, Board,Referee);

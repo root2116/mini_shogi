@@ -1,8 +1,8 @@
-#include "../include/Silver.h"
-#include "../include/Piece.h"
-#include "../include/game.h"
-#include "../include/Board.h"
-#include "../include/utility.h"
+#include "Silver.h"
+#include "Piece.h"
+#include "Game.h"
+#include "Board.h"
+#include "utility.h"
 
 #include <stdbool.h>
 #include <stdlib.h>

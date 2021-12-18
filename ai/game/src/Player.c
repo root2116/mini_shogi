@@ -1,7 +1,8 @@
-#include "../include/Player.h"
-#include "../include/game.h"
-#include "../include/Board.h"
-#include "../include/Piece.h"
+#include "Player.h"
+#include "Game.h"
+#include "Board.h"
+#include "Piece.h"
+#include "Referee.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +18,7 @@ Player new_player(int turn){
     player->drop_my_captured = drop_my_captured;
 
     player->turn = turn;
+    
 
 
     return player;

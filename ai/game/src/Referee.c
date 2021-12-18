@@ -1,9 +1,9 @@
-#include "../include/Referee.h"
-#include "../include/Piece.h"
-#include "../include/Board.h"
-#include "../include/list.h"
+#include "Referee.h"
+#include "Piece.h"
+#include "Board.h"
+#include "list.h"
 
-#include "../include/utility.h"
+#include "utility.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -138,6 +138,9 @@ static bool is_legal_drop(Referee this, Board board, Piece piece, Point dest){
 }
 
 static bool can_promote(Referee this, Piece piece, Point dest){
+
+    if(piece->m->promoted == true) return false;
+    
     //成れるかどうか判定する
     if (piece->get_side(piece) == FIRST){ //PieceがFistなら
         if(dest.y == 0 || piece->get_location(piece).y == 0){ //敵陣に移動or敵陣から移動
@@ -433,6 +436,23 @@ bool is_checkmated(Referee this, Board board, int side){
     }
 }
 
+Referee clone_referee(Referee this){
+    Referee new = new_referee(this->get_turn(this));
+
+    new->turn_count = this->turn_count;
+     for(int i = 0; i < 151; i++){
+        for(int j = 0; j < 46; j++){
+            new->history[i][j] = this->history[i][j];
+        }
+    }
+
+    return new;
+}
+
+void free_referee(Referee this){
+    free(this);
+}
+
 Referee new_referee(int turn){
 
     Referee instance = calloc(1, sizeof(*instance));
@@ -457,6 +477,8 @@ Referee new_referee(int turn){
     instance->will_checkmate = will_checkmate;
     instance->legal_actions = legal_actions;
     instance->is_checkmated = is_checkmated;
+    instance->clone_referee = clone_referee;
+    instance->free_referee = free_referee;
 
   
     //historyを初期化

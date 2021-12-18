@@ -1,5 +1,5 @@
-#include "../include/game.h"
-#include "../include/Piece.h"
+#include "Game.h"
+#include "Piece.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -156,3 +156,16 @@ void convert_action_into_string(Action action, char* str){
     }
 }
 
+int argmax(int *list, int len){
+    int max_index = 0;
+    int max = list[0];
+    for(int i = 0; i < len; i++){
+        if(max < list[i]){
+            max = list[i];
+            max_index = i;
+        }
+
+    }
+
+    return max_index;
+}

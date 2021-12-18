@@ -1,10 +1,8 @@
 #ifndef INCLUDED_KING
 #define INCLUDED_KING
 
-#include "Piece.h"
-#include "Board.h"
-
-
+struct piece_t;
+typedef struct piece_t *Piece;
 
 Piece new_king(int side);
 
