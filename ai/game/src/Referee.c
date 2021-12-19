@@ -438,6 +438,8 @@ bool is_checkmated(Referee this, Board board, int side){
 }
 
 
+
+
 void copy_referee(Referee this, Referee copy){
     copy->turn_count = this->turn_count;
     copy->turn = this->turn;

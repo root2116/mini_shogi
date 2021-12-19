@@ -296,7 +296,21 @@ void copy_game(Game this, Game copy){
 }
 
 
+bool is_done(Game this){
+    return this->is_lose(this) || this->is_draw(this);
+}
 
+bool is_lose(Game this){
+    return this->ref->is_checkmated(this->ref,this->board,this->ref->get_turn(this->ref));
+}
+
+bool is_draw(Game this){
+    if(this->ref->get_turn_count(this->ref) > 150){
+        return true;
+    }else{
+        return false;
+    }
+}
 
 
 Game new_game(int side){
@@ -330,6 +344,9 @@ Game new_game(int side){
     instance->free_game = free_game;
     instance->next_state = next_state;
     instance->copy_game = copy_game;
+    instance->is_done = is_done;
+    instance->is_lose = is_lose;
+    instance->is_draw = is_draw;
 
 
 

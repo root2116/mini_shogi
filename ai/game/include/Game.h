@@ -93,6 +93,9 @@ struct game_t {
     int (*cpu_vs_cpu)(Game, void (*game_ai0)(), void (*game_ai1)());
     void (*next_state)(Game, Action);
     void (*copy_game)(Game, Game);
+    bool (*is_done)(Game);
+    bool (*is_lose)(Game);
+    bool (*is_draw)(Game);
 };
 
 Game new_game(int side);

@@ -391,6 +391,26 @@ void restore_board(Board this){
 
 void free_board(Board this){
     this->free_pieces(this);
+    
+    for(int k = 0; k < MAX_STACK; k++){
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                if(this->stack.boards[k][i][j] != NULL){
+                    free(this->stack.boards[k][i][j]);
+                }
+            }
+        }
+
+        for(int i = 0; i < 2; i++){
+            for(int j = 0; j < 10; j++){
+                if(this->stack.captured_pieces[k][i][j] != NULL){
+                    free(this->stack.captured_pieces[k][i][j]);
+                }
+            }
+        }
+    }
+
+    
 }
 
 void copy_board(Board this, Board copy){
