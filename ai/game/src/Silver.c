@@ -11,17 +11,11 @@
 Piece new_silver(int side){
     Piece instance = new_piece();
 
-    instance->move = move;
-    
-
-    instance->promote = promote;
+   
    
 
-    instance->m->name = calloc(3, sizeof(char));
     strcpy(instance->m->name, "GI");
-    instance->m->eng_name = calloc(12, sizeof(char));
     strcpy(instance->m->eng_name, "SILVER");
-    instance->m->idle_eng_name = calloc(12, sizeof(char));
     strcpy(instance->m->idle_eng_name, "NARI-SILVER");
 
     instance->m->kind = SILVER;
@@ -47,22 +41,17 @@ Piece new_silver(int side){
         };
 
 
-    Vector *vectors = convert_array_into_vectors(silver_array, SILVER_MOVE_NUM);
-    Vector *idle_vectors = convert_array_into_vectors(gold_array,GOLD_MOVE_NUM);
+
 
     if(side == FIRST){
-        
-        instance->m->ability.directions = vectors;
-        instance->m->idle_ability.directions = idle_vectors;
+        convert_array_into_vectors(silver_array, SILVER_MOVE_NUM, instance->m->ability.directions);
+        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->m->idle_ability.directions);
 
     }else if(side == SECOND){
-
-        inverse_vectors(vectors,SILVER_MOVE_NUM);
-        inverse_vectors(idle_vectors,GOLD_MOVE_NUM);
-
-        instance->m->ability.directions = vectors;
-        instance->m->idle_ability.directions = idle_vectors;
-
+        convert_array_into_vectors(silver_array, SILVER_MOVE_NUM, instance->m->ability.directions);
+        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->m->idle_ability.directions);
+        inverse_vectors(instance->m->ability.directions, SILVER_MOVE_NUM);
+        inverse_vectors(instance->m->idle_ability.directions, GOLD_MOVE_NUM);
     }
     
     instance->m->ability.length = SILVER_MOVE_NUM;

@@ -12,7 +12,7 @@
 Player new_player(int turn){
 
     
-    Player player = calloc(1,sizeof(*player));
+    Player player = malloc(sizeof(*player));
 
     player->move_my_piece = move_my_piece;
     player->drop_my_captured = drop_my_captured;

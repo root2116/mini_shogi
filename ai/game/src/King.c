@@ -12,14 +12,11 @@
 Piece new_king(int side){
     Piece instance = new_piece();
 
-    instance->promote = promote;
 
 
-    instance->m->name = calloc(3, sizeof(char));
+    
     strcpy(instance->m->name, "OU");
-    instance->m->eng_name = calloc(12, sizeof(char));
     strcpy(instance->m->eng_name, "KING");
-    instance->m->idle_eng_name = calloc(12, sizeof(char));
     strcpy(instance->m->idle_eng_name, "KING");
 
     instance->m->kind = KING;
@@ -36,10 +33,10 @@ Piece new_king(int side){
 
     
     int king_array[KING_MOVE_NUM][2] = {{1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{-1,1},{0,1},{1,1}};
-    instance->m->ability.directions = convert_array_into_vectors(king_array,KING_MOVE_NUM);
+    convert_array_into_vectors(king_array, KING_MOVE_NUM, instance->m->ability.directions);
     instance->m->ability.length = KING_MOVE_NUM;
 
-    instance->m->idle_ability.directions = convert_array_into_vectors(king_array, KING_MOVE_NUM);
+    convert_array_into_vectors(king_array, KING_MOVE_NUM, instance->m->idle_ability.directions);
     instance->m->ability.length = KING_MOVE_NUM;
     
     instance->m->side = side;

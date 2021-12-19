@@ -5,15 +5,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-Vector* convert_array_into_vectors(int array[][2], int len){
-    Vector *vecs = calloc(len,sizeof(Vector));
+void convert_array_into_vectors(int array[][2], int len, Vector* vecs){
+    
 
     for(int i = 0; i < len; i++){
         vecs[i].x = array[i][0];
         vecs[i].y = array[i][1];
     }
 
-    return vecs;
 }
 
 void add_vec_to_point(Point a, Vector v, Point *b)
@@ -168,4 +167,14 @@ int argmax(int *list, int len){
     }
 
     return max_index;
+}
+
+void swap_str(char *str1, char *str2, int len){
+    char tmp;
+    for(int i = 0; i < len; i++){
+        tmp = str1[i];
+        str1[i] = str2[i];
+        str2[i] = tmp;
+    }
+    
 }

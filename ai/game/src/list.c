@@ -42,13 +42,13 @@ Action* get_nth(List list, int n){
 
 void add(List *list, Move move, Drop drop){
     if(*list == NULL){
-        List new_list = calloc(1, sizeof(*new_list));
+        List new_list = malloc(sizeof(*new_list));
         new_list->action.move = move;
         new_list->action.drop = drop;
         new_list->next = NULL;
         *list = new_list;
     }else{
-        List new_list = calloc(1,sizeof(*new_list));
+        List new_list = malloc(sizeof(*new_list));
         new_list->action.move = move;
         new_list->action.drop = drop;
         new_list->next = *list;

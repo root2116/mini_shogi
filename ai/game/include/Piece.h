@@ -27,17 +27,18 @@ typedef struct point_t Point;
 #define KING_MOVE_NUM 8
 
 #define PIECE_NUM 12
+#define MAX_DIRECTION 20
 
 typedef struct {
-    Vector *directions;
+    Vector directions[20];
     int length;
 }Ability;
 
 struct piece_member
 {
-    char *name;
-    char *eng_name;
-    char *idle_eng_name;
+    char name[3];
+    char eng_name[12];
+    char idle_eng_name[12];
     PieceKind kind;
     PieceKind idle_kind;
     bool promoted;

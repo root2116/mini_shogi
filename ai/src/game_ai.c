@@ -13,9 +13,10 @@
 int playout(Game game, Action action){
     Game clone = game->clone_game(game);
     clone->next_state(clone,action);
+    clone->user_num = SECOND;
 
     int value = -clone->cpu_vs_cpu(clone, random_ai, random_ai);
-    // clone->free_game(clone);
+    clone->free_game(clone);
     return value;
     
 }
@@ -53,7 +54,7 @@ void mcs_ai(Game game, char* output){
     int *values = calloc(len,sizeof(int));
     for(int i = 0; i < len; i++){
         Action *action = get_nth(next_actions,i);
-        for(int j = 0; j < 10; j++){
+        for(int j = 0; j < 3; j++){
             values[i] += playout(game,*action);
         }
     }

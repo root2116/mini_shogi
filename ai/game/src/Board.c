@@ -63,6 +63,9 @@ Piece pop_clone_piece_from_captured_pieces(Board this, Piece piece){
             return clone;
         }
     }
+
+    fprintf(stderr, "Not exist the captured_piece.\n");
+    return NULL;
 }
 
 
@@ -161,7 +164,9 @@ static bool can_move(Board this, Piece piece, Point dest){
        return true;
     
     }
-    
+
+    fprintf(stderr,"Something went wrong in can_move()\n");
+    return false;
 
     
  
@@ -371,7 +376,7 @@ void free_board(Board this){
 
 Board new_board()
 {
-    Board instance = calloc(1,sizeof(*instance));
+    Board instance = malloc(sizeof(*instance));
     instance->display_board = display_board;
 
     instance->can_move = can_move;

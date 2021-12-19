@@ -22,7 +22,7 @@ struct action_t;
 typedef struct action_t Action;
 
 void add_vec_to_point(Point a, Vector v, Point *b);
-Vector *convert_array_into_vectors(int array[][2], int len);
+void convert_array_into_vectors(int array[][2], int len, Vector*);
 bool is_same_point(Point a, Point b);
 int gcd(int x, int y);
 int ctoi(char c);
@@ -33,4 +33,5 @@ void inverse_vectors(Vector *vecs, int len);
 void init_string(char *str, char init);
 void *convert_action_into_string(Action,char*);
 int argmax(int*, int);
+void swap_str(char *, char *, int);
 #endif

@@ -15,15 +15,9 @@ Piece new_bishop(int side){
     Piece instance = new_piece();
 
     
-
-    instance->promote = promote;
-   
-    instance->m->name = calloc(3,sizeof(char));
-    strcpy(instance->m->name,"KK");  
-    instance->m->eng_name = calloc(12,sizeof(char));
+    strcpy(instance->m->name,"KK"); 
     strcpy(instance->m->eng_name,"BISHOP");
-    instance->m->idle_eng_name = calloc(12, sizeof(char));
-    strcpy(instance->m->idle_eng_name, "HORSE");
+    strcpy(instance->m->idle_eng_name,"HORSE");
     
 
     instance->m->kind = BISHOP;
@@ -57,12 +51,10 @@ Piece new_bishop(int side){
         { 1, 0},{ 0, 1},{-1, 0},{0, -1}
         };
 
-
-    
-    instance->m->ability.directions = convert_array_into_vectors(bishop_array,BISHOP_MOVE_NUM);
+    convert_array_into_vectors(bishop_array, BISHOP_MOVE_NUM, instance->m->ability.directions);
     instance->m->ability.length = BISHOP_MOVE_NUM;
 
-    instance->m->idle_ability.directions = convert_array_into_vectors(promoted_bishop_array,PROMOTED_BISHOP_MOVE_NUM);
+    convert_array_into_vectors(promoted_bishop_array, PROMOTED_BISHOP_MOVE_NUM, instance->m->idle_ability.directions);
     instance->m->idle_ability.length = PROMOTED_BISHOP_MOVE_NUM;
 
     instance->m->side = side;

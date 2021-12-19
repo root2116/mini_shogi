@@ -14,7 +14,7 @@ void user_vs_cpu(Game game, void (*game_ai)()){
     Board board = game->board;
 
     Player players[2] = {game->players[0], game->players[1]};
-    char *input = calloc(6,sizeof(char));
+    char input[6];
     Move move = {0, 0, 0, 0, 0};
     Drop drop = {0, 0, NONE};
 
@@ -83,7 +83,7 @@ void user_vs_user(Game game){
     Board board = game->board;
 
     Player players[2] = {game->players[0],game->players[1]};
-    char *input = calloc(6,sizeof(char));
+    char input[6]; 
     Move move = {0, 0, 0, 0, 0};
     Drop drop = {0, 0, NONE};
 
@@ -151,7 +151,8 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
 
     int first_turn = ref->get_turn(ref);
 
-    char *input = calloc(6,sizeof(char));
+    
+    char input[6];
     Move move = {0, 0, 0, 0, 0};
     Drop drop = {0, 0, NONE};
     
@@ -159,6 +160,13 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
     while(true){
         
         int turn = ref->get_turn(ref);
+        if(game->user_num == FIRST){
+            board->display_board(board, players[0], players[1]);
+            printf("%d: %d's turn\n", ref->get_turn_count(ref),turn);
+            
+        }
+
+
         if(ref->is_checkmated(ref,board,turn)){
             if(turn == first_turn){
                 return -1;
@@ -174,13 +182,19 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
         
         init_string(input,'\0');
 
-        // board->display_board(board, players[0], players[1]);
-
         if(turn == FIRST){
             game_ai0(game,input);
         }else{
             game_ai1(game,input);
         }
+
+        if(game->user_num == FIRST){
+
+            printf("%s\n",input);
+        }
+        
+
+        
 
         if (input[2] >= '0' && input[2] <= '9'){
             parse_move(input, &move);
@@ -224,7 +238,7 @@ void next_state(Game game, Action action){
 }
 //ゲームオブジェクトを複製する。初期状態をクローンしてはいけない
 Game clone_game(Game game){
-    Game new = calloc(1,sizeof(*new_game));
+    Game new = malloc(sizeof(*new_game));
     
     Board board = game->board->clone_board(game->board);
     Referee ref = game->ref->clone_referee(game->ref);
@@ -257,7 +271,7 @@ Game clone_game(Game game){
 
 Game new_game(int side){
 
-    Game instance = calloc(1,sizeof(*instance));
+    Game instance = malloc(sizeof(*instance));
 
     Board board = new_board();
     Referee ref = new_referee(side);

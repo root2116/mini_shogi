@@ -11,16 +11,9 @@
 Piece new_pawn(int side){
     Piece instance = new_piece();
 
-    instance->move = move;
-
-    instance->promote = promote;
-    
-
-    instance->m->name = calloc(3, sizeof(char));
+   
     strcpy(instance->m->name, "FU");
-    instance->m->eng_name = calloc(12, sizeof(char));
     strcpy(instance->m->eng_name, "PAWN");
-    instance->m->idle_eng_name = calloc(12, sizeof(char));
     strcpy(instance->m->idle_eng_name, "TO-GOLD");
 
     instance->m->kind = PAWN;
@@ -48,19 +41,16 @@ Piece new_pawn(int side){
         };
 
 
-    Vector *vectors = convert_array_into_vectors(pawn_array, PAWN_MOVE_NUM);
-    Vector *idle_vectors = convert_array_into_vectors(gold_array, GOLD_MOVE_NUM);
-
+   
     if(side == FIRST){
-        instance->m->ability.directions = vectors;
-        instance->m->idle_ability.directions = idle_vectors;
-
+        convert_array_into_vectors(pawn_array, PAWN_MOVE_NUM, instance->m->ability.directions);
+        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->m->idle_ability.directions);
     }else if(side == SECOND){
-        inverse_vectors(vectors,PAWN_MOVE_NUM);
-        inverse_vectors(idle_vectors,GOLD_MOVE_NUM);
+        convert_array_into_vectors(pawn_array, PAWN_MOVE_NUM, instance->m->ability.directions);
+        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->m->idle_ability.directions);
+        inverse_vectors(instance->m->ability.directions, PAWN_MOVE_NUM);
+        inverse_vectors(instance->m->idle_ability.directions, GOLD_MOVE_NUM);
 
-        instance->m->ability.directions = vectors;
-        instance->m->idle_ability.directions = idle_vectors;
     }
 
 

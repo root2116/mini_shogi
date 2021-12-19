@@ -157,7 +157,9 @@ static bool can_promote(Referee this, Piece piece, Point dest){
         else
             return false;
     }
-     //反則;敗北
+
+    fprintf(stderr, "An unexpected error has occurred in can_promote().\n");
+    return false;
 
 }
 
@@ -455,7 +457,7 @@ void free_referee(Referee this){
 
 Referee new_referee(int turn){
 
-    Referee instance = calloc(1, sizeof(*instance));
+    Referee instance = malloc(sizeof(*instance));
     instance->turn = turn;
     instance->turn_count = 1;
 
