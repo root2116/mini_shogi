@@ -277,6 +277,10 @@ void next_state(Game game, Action action){
     {
         game->players[turn]->drop_my_captured(game->players[turn], action.drop, game->board, game->ref);
     }
+    game->ref->update_turn(game->ref);
+    game->ref->increment_turn_count(game->ref);
+    game->ref->record_board(game->ref, game->board);
+    
 }
 
 void copy_game(Game this, Game copy){

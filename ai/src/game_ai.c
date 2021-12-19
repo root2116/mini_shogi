@@ -57,7 +57,7 @@ void mcs_ai(Game game, char* output){
     int *values = calloc(len,sizeof(int));
     for(int i = 0; i < len; i++){
         Action *action = get_nth(next_actions,i);
-        for(int j = 0; j < 8; j++){
+        for(int j = 0; j < 5; j++){
             game->copy_game(game,copy);
             copy->next_state(copy, *action);
             values[i] += playout(copy);
@@ -77,7 +77,12 @@ void evaluate_strength(void (*game_ai0)(), void (*game_ai1)()){
     int draw = 0;
     for(int i = 0; i < 100; i++){
         Game game = new_game(FIRST);
+        
         printf("round %d\n",(i+1));
+        printf("game_ai0: %d\n", win);
+        printf("game_ai1: %d\n", lose);
+        printf("draw: %d\n", draw);
+
         int result = game->cpu_vs_cpu(game,game_ai0,game_ai1);
         if(result == 1){
             win++;
