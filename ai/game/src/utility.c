@@ -1,19 +1,18 @@
-#include "../include/game.h"
-#include "../include/Piece.h"
+#include "Game.h"
+#include "Piece.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-Vector* convert_array_into_vectors(int array[][2], int len){
-    Vector *vecs = calloc(len,sizeof(Vector));
+void convert_array_into_vectors(int array[][2], int len, Vector* vecs){
+    
 
     for(int i = 0; i < len; i++){
         vecs[i].x = array[i][0];
         vecs[i].y = array[i][1];
     }
 
-    return vecs;
 }
 
 void add_vec_to_point(Point a, Vector v, Point *b)
@@ -119,9 +118,12 @@ void convert_action_into_string(Action action, char* str){
         str[1] = 'A' + start.x;
         str[2] = '5' - end.y;
         str[3] = 'A' + end.x;
+        str[4] = '\0';
+        str[5] = '\0';
 
         if(action.move.will_promote){
             str[4] = 'N';
+            
         }
 
 
@@ -156,3 +158,26 @@ void convert_action_into_string(Action action, char* str){
     }
 }
 
+int argmax(int *list, int len){
+    int max_index = 0;
+    int max = list[0];
+    for(int i = 0; i < len; i++){
+        if(max < list[i]){
+            max = list[i];
+            max_index = i;
+        }
+
+    }
+
+    return max_index;
+}
+
+void swap_str(char *str1, char *str2, int len){
+    char tmp;
+    for(int i = 0; i < len; i++){
+        tmp = str1[i];
+        str1[i] = str2[i];
+        str2[i] = tmp;
+    }
+    
+}

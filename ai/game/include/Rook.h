@@ -1,10 +1,8 @@
 #ifndef INCLUDED_ROOK
 #define INCLUDED_ROOK
 
-#include "Piece.h"
-#include "Board.h"
-
-
+struct piece_t;
+typedef struct piece_t *Piece;
 
 Piece new_rook(int side);
 

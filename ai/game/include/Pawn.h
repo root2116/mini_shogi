@@ -1,11 +1,8 @@
 #ifndef INCLUDED_PAWN
 #define INCLUDED_PAWN
 
-#include "Piece.h"
-#include "Board.h"
-
-
-
+struct piece_t;
+typedef struct piece_t *Piece;
 
 Piece new_pawn(int side);
 

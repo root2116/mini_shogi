@@ -1,10 +1,8 @@
 #ifndef INCLUDED_BISHOP
 #define INCLUDED_BISHOP
 
-#include "Piece.h"
-#include "Board.h"
-
-
+struct piece_t;
+typedef struct piece_t *Piece;
 
 Piece new_bishop(int side);
 

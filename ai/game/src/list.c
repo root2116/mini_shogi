@@ -1,5 +1,5 @@
-#include "../include/list.h"
-#include "../include/game.h"
+#include "list.h"
+#include "Game.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,15 +27,28 @@ int length(List list){
     return count;
 }
 
+Action* get_nth(List list, int n){
+    int k = 0;
+    while(list != NULL){
+        if(k == n){
+            return &list->action;
+        }
+        list = list->next;
+        k++;
+    }
+
+    return NULL;
+} 
+
 void add(List *list, Move move, Drop drop){
     if(*list == NULL){
-        List new_list = calloc(1, sizeof(*new_list));
+        List new_list = malloc(sizeof(*new_list));
         new_list->action.move = move;
         new_list->action.drop = drop;
         new_list->next = NULL;
         *list = new_list;
     }else{
-        List new_list = calloc(1,sizeof(*new_list));
+        List new_list = malloc(sizeof(*new_list));
         new_list->action.move = move;
         new_list->action.drop = drop;
         new_list->next = *list;

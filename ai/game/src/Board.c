@@ -1,17 +1,17 @@
 
-#include "../include/Board.h"
-#include "../include/Piece.h"
-#include "../include/game.h"
-#include "../include/Player.h"
+#include "Board.h"
+#include "Piece.h"
+#include "Game.h"
+#include "Player.h"
 
-#include "../include/King.h"
-#include "../include/Bishop.h"
-#include "../include/Rook.h"
-#include "../include/Gold.h"
-#include "../include/Silver.h"
-#include "../include/Pawn.h"
+#include "King.h"
+#include "Bishop.h"
+#include "Rook.h"
+#include "Gold.h"
+#include "Silver.h"
+#include "Pawn.h"
 
-#include "../include/utility.h"
+#include "utility.h"
 
 
 #include <stdio.h>
@@ -36,35 +36,47 @@ bool is_on_enemy_area(int side,Point p){
 }
 
 Piece find_clone_piece_from_board(Board this, Piece piece){
-    
-    for(int i = 0; i < 5; i++){
-        for(int j = 0; j < 5; j++){
+
+    for (int i = 0; i < 5; i++){
+        for (int j = 0; j < 5; j++){
             Piece target = this->board[i][j];
-            if(target == NULL) continue;
-            if(is_same_point(target->get_location(target),piece->get_location(piece))){
+            if (target == NULL)
+                continue;
+            if (is_same_point(target->get_location(target), piece->get_location(piece))){
                 return target;
             }
         }
     }
 
     return NULL;
-    
-    
 }
 
 Piece pop_clone_piece_from_captured_pieces(Board this, Piece piece){
     for(int i = 0; i < 10; i++){
         int side = piece->get_side(piece);
-        Piece clone = this->captured_pieces[side][i];
-        if(clone == NULL) continue;
+        Piece copy = this->captured_pieces[side][i];
+        if(copy == NULL) continue;
 
-        if(clone->get_kind(clone) == piece->get_kind(piece)){
+        if(copy->get_kind(copy) == piece->get_kind(piece)){
             this->captured_pieces[side][i] = NULL;
-            return clone;
+            return copy;
+        }
+    }
+
+    return NULL;
+}
+
+void add_piece_to_captured_pieces(Board this, Piece piece){
+    for(int i = 0; i < 10; i++){
+        if(piece == NULL) continue;
+
+        int side = piece->get_side(piece);
+        if(this->captured_pieces[side][i] == NULL){
+            this->captured_pieces[side][i] = piece;
+            return;
         }
     }
 }
-
 
 static void display_board(Board this,Player player0, Player player1){
     printf("\n");
@@ -161,14 +173,16 @@ static bool can_move(Board this, Piece piece, Point dest){
        return true;
     
     }
-    
+
+    fprintf(stderr,"Something went wrong in can_move()\n");
+    return false;
 
     
  
 }
 
 static Piece move_piece(Board this, Piece piece, Point dest){
-    Point cur = piece->m->cur_loc;
+    Point cur = piece->cur_loc;
     this->board[cur.y][cur.x] = NULL;
     Piece captured = this->board[dest.y][dest.x];
     if(captured != NULL){
@@ -211,60 +225,39 @@ static void drop_piece(Board this,Piece piece, Point dest){
 
 }
 
+
 void create_next_board(Board this, Piece piece, Point dest){
-    this->push_board(this);
-    this->clone_board(this);
+    this->push_pieces(this);
+    this->swap_board(this);
 
-    Piece clone_piece = find_clone_piece_from_board(this, piece);
-    if (clone_piece == NULL){
-        clone_piece = pop_clone_piece_from_captured_pieces(this, piece);
-        this->drop_piece(this, clone_piece, dest);
+    Piece piece_copy = find_clone_piece_from_board(this,piece);
+    if (piece_copy != NULL){
+        Piece captured = this->move_piece(this, piece_copy, dest);
+        add_piece_to_captured_pieces(this,captured);
     }else{
-        this->move_piece(this, clone_piece, dest);
-    }
-
-    clone_piece->m->cur_loc.x = dest.x;
-    clone_piece->m->cur_loc.y = dest.y;
-}
-
-
-void clone_board(Board this){
-
-    for(int i = 0; i < 5; i++){
-        for(int j = 0; j < 5; j++){
-            Piece piece = this->stack.boards[this->stack.top][i][j];
-            if(piece == NULL){
-                this->board[i][j] = NULL;
-            }else{
-                this->board[i][j] = piece->clone_piece(piece);
-            }
-            
+        piece_copy = pop_clone_piece_from_captured_pieces(this, piece);
+        if(piece_copy == NULL){
+            fprintf(stderr, "Not found captured_pieces.\n");
         }
+        this->drop_piece(this, piece_copy, dest);
     }
 
-    for(int i = 0; i < 2; i++){
-        for(int j = 0; j < 10; j++){
-            Piece piece = this->stack.captured_pieces[this->stack.top][i][j];
-            if(piece == NULL){
-                this->captured_pieces[i][j] = NULL;
-            }else{
-                this->captured_pieces[i][j] = piece->clone_piece(piece);
-            }
-            
-        }
-    }
-
+    piece_copy->cur_loc.x = dest.x;
+    piece_copy->cur_loc.y = dest.y;
 }
 
 
 
 
-void free_board(Board this){
+
+//boardにあるpieceを解放してNULLを入れる
+void free_pieces(Board this){
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             if(this->board[i][j] == NULL) continue;
 
-            this->board[i][j]->free_piece(this->board[i][j]);
+            free(this->board[i][j]);
+            this->board[i][j] = NULL;
         }
     }
 
@@ -272,54 +265,123 @@ void free_board(Board this){
         for(int j = 0; j < 10; j++){
             if(this->captured_pieces[i][j] == NULL) continue;
 
-            this->captured_pieces[i][j]->free_piece(this->captured_pieces[i][j]);
+            free(this->captured_pieces[i][j]);
+            this->captured_pieces[i][j] = NULL;
         }
     }
+
+    
 }
 
-void push_board(Board this){
+//スタックに現在のboardとcaptured_pieces内の駒をコピーする
+void push_pieces(Board this){
 
+    Piece pieces[PIECE_NUM];
     if(this->stack.top >= MAX_STACK - 1){
         printf("BoardStack is alreadly full.");
     }else{
         this->stack.top++;
+
+        int count1 = 0;
+        
+
+        //スタックからピースを集める
         for(int i = 0; i < 5; i++){
             for(int j = 0; j < 5; j++){
-                this->stack.boards[this->stack.top][i][j] = this->board[i][j];
+                if (this->stack.boards[this->stack.top][i][j] != NULL){
+                    pieces[count1] = this->stack.boards[this->stack.top][i][j];
+                    count1++;
+                }
             }
         }
 
         for(int i = 0; i < 2; i++){
             for(int j = 0; j < 10; j++){
-                this->stack.captured_pieces[this->stack.top][i][j] = this->captured_pieces[i][j];
+                if(this->stack.captured_pieces[this->stack.top][i][j] != NULL){
+                    pieces[count1] = this->stack.captured_pieces[this->stack.top][i][j];
+                    count1++;
+                }
             }
         }
-        
-    }
-    
-    
-}
 
-void restore_board(Board this){
 
-    if(this->stack.top <= -1){
-        printf("BoardStack is emtpy.");
-    }else{
-        free_board(this);
+        //スタックをクリアする
         for(int i = 0; i < 5; i++){
             for(int j = 0; j < 5; j++){
-                this->board[i][j] = this->stack.boards[this->stack.top][i][j];
                 this->stack.boards[this->stack.top][i][j] = NULL;
             }
         }
 
         for(int i = 0; i < 2; i++){
             for(int j = 0; j < 10; j++){
-                this->captured_pieces[i][j] = this->stack.captured_pieces[this->stack.top][i][j];
                 this->stack.captured_pieces[this->stack.top][i][j] = NULL;
             }
         }
+
         
+
+        
+        int count2 = 0;
+        //スタックのピースに情報をコピーして配置をboardと同じにする
+
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                if(this->board[i][j] != NULL){
+                    this->board[i][j]->copy_piece(this->board[i][j], pieces[count2]);
+                    this->stack.boards[this->stack.top][i][j] = pieces[count2];
+                    count2++;
+                }else{
+                    this->stack.boards[this->stack.top][i][j] = NULL;
+                }
+            }
+        }
+
+        for(int i = 0; i < 2; i++){
+            for(int j = 0; j < 10; j++){
+                if(this->captured_pieces[i][j] != NULL){
+                    this->captured_pieces[i][j]->copy_piece(this->captured_pieces[i][j], pieces[count2]);
+                    this->stack.captured_pieces[this->stack.top][i][j] = pieces[count2];
+                    count2++;
+                }
+                
+            }
+        }
+        
+    }
+    
+    
+}
+
+void swap_board(Board this){
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            Piece tmp = this->board[i][j];
+            this->board[i][j] = this->stack.boards[this->stack.top][i][j];
+            this->stack.boards[this->stack.top][i][j] = tmp;
+        }
+    }
+
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < 10; j++){
+            Piece tmp = this->captured_pieces[i][j];
+            this->captured_pieces[i][j] = this->stack.captured_pieces[this->stack.top][i][j];
+            this->stack.captured_pieces[this->stack.top][i][j] = tmp;
+        }
+    }
+
+}
+
+//スタックからボードを取り出して、boardに反映
+void restore_board(Board this){
+
+    Piece pieces[12];
+    int count1 = 0;
+
+    if(this->stack.top <= -1){
+        printf("BoardStack is emtpy.");
+    }else{
+        
+        this->swap_board(this);
         this->stack.top--;
     }
     
@@ -327,9 +389,84 @@ void restore_board(Board this){
 
 
 
+void free_board(Board this){
+    this->free_pieces(this);
+}
+
+void copy_board(Board this, Board copy){
+    Piece pieces[12];
+    int count1 = 0;
+
+
+    //ピースを集める
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            if(copy->board[i][j] != NULL){
+                pieces[count1] = copy->board[i][j];
+                count1++;
+            }
+        }
+    }
+
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < 10; j++){
+            if(copy->captured_pieces[i][j] != NULL){
+                pieces[count1] = copy->captured_pieces[i][j];
+                count1++;
+            }
+        }
+    }
+
+    //copyをクリアする
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            copy->board[i][j] = NULL;
+        }
+    }
+
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < 10; j++){
+            copy->captured_pieces[i][j] = NULL;
+        }
+    }
+
+    
+    int count2 = 0;
+    //コピーする
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            if(this->board[i][j] != NULL){
+                Piece piece_copy = pieces[count2];
+                Piece original = this->board[i][j];
+                original->copy_piece(original,piece_copy);
+                copy->board[i][j] = piece_copy;
+                count2++;
+            }else{
+                copy->board[i][j] = NULL;
+            }
+            
+        }
+    }
+
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < 10; j++){
+            if(this->captured_pieces[i][j] != NULL){
+                Piece piece_copy = pieces[count2];
+                Piece original = this->captured_pieces[i][j];
+                original->copy_piece(original,piece_copy);
+                copy->captured_pieces[i][j] = piece_copy;
+                count2++;
+            }else{
+                copy->captured_pieces[i][j] = NULL;
+            }
+        }
+    }
+}
+
+
 Board new_board()
 {
-    Board instance = calloc(1,sizeof(*instance));
+    Board instance = malloc(sizeof(*instance));
     instance->display_board = display_board;
 
     instance->can_move = can_move;
@@ -337,10 +474,12 @@ Board new_board()
     instance->can_drop = can_drop;
     instance->drop_piece = drop_piece;
     instance->create_next_board = create_next_board;
-    instance->clone_board = clone_board;
-    instance->free_board = free_board;
-    instance->push_board = push_board;
+    instance->free_pieces = free_pieces;
+    instance->push_pieces = push_pieces;
     instance->restore_board = restore_board;
+    instance->free_board = free_board;
+    instance->copy_board = copy_board;
+    instance->swap_board = swap_board;
 
     
 
@@ -369,12 +508,9 @@ Board new_board()
                 instance->stack.boards[k][i][j] = NULL;
             }
         }
-    }  
+    }
 
-    
-
-    
-    //持ち駒を初期化
+     //持ち駒を初期化
     for(int i = 0; i < 2; i++){
         for(int j = 0; j < 10; j++){
             instance->captured_pieces[i][j] = NULL;
@@ -385,9 +521,19 @@ Board new_board()
     }
     
 
+    //スタックに駒を12個入れる
+    for (int k = 0; k < MAX_STACK; k++){
+        int count = 0;
+        while(count < 12){
+            instance->stack.boards[k][count / 5][count % 5] = new_piece();
+            count++;
+        }
+    }
+
+   
+
 
     //駒を配置
-
     for(int i = 0; i < PIECE_NUM; i++){
         Point location = pieces[i]->get_location(pieces[i]);
         instance->board[location.y][location.x] = pieces[i];

@@ -1,9 +1,14 @@
 #ifndef INCLUDED_GAME_AI
 #define INCLUDED_GAME_AI
 
-#include "../../game/include/Board.h"
-#include "../../game/include/Referee.h"
+struct action_t;
+typedef struct action_t Action;
 
-char *random_ai(Referee, Board,char*);
+struct game_t;
+typedef struct game_t *Game;
 
+void random_ai(Game ,char*);
+void mcs_ai(Game, char*);
+int playout(Game);
+void evaluate_strength(Game, void (*game_ai0)(), void (*game_ai1)());
 #endif
