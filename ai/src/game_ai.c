@@ -71,11 +71,12 @@ void mcs_ai(Game game, char* output){
     
 }
 
-void evaluate_strength(Game game, void (*game_ai0)(), void (*game_ai1)()){
+void evaluate_strength(void (*game_ai0)(), void (*game_ai1)()){
     int win = 0;
     int lose = 0;
     int draw = 0;
     for(int i = 0; i < 100; i++){
+        Game game = new_game(FIRST);
         printf("round %d\n",(i+1));
         int result = game->cpu_vs_cpu(game,game_ai0,game_ai1);
         if(result == 1){
