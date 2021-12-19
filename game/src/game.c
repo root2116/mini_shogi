@@ -9,6 +9,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int file(char input){ //試合で指された手をテキストファイルに保存
+
+    FILE *fout;
+    //char name[256];
+    //scanf("%s", name);//error;&?
+    //fp = fopen("test.txt", "r")) != NULL
+    if ((fout = fopen("te.txt", "w")) != NULL){ //error
+        fprintf(fout, "%s", input);
+        fclose(fout);
+    }
+    else
+        printf("fp2NG");
+
+    
+    return 0;
+}   
+
 void start_game(){
 
     
@@ -87,5 +104,7 @@ void start_game(){
         
         ref->display_history(ref);
         ref->update_turn(ref);
+
+        file(input);
     }
 }
