@@ -139,7 +139,7 @@ static bool is_legal_drop(Referee this, Board board, Piece piece, Point dest){
 
 static bool can_promote(Referee this, Piece piece, Point dest){
 
-    if(piece->m->promoted == true) return false;
+    if(piece->promoted == true) return false;
     
     //成れるかどうか判定する
     if (piece->get_side(piece) == FIRST){ //PieceがFistなら
@@ -319,9 +319,9 @@ static bool judge_check(Referee this, Board board, int side){
             Piece piece2 = board->board[i][j];
             if(piece2 != NULL){
                 if(piece2->get_side(piece2) == 1 - side){
-                    for(int k = 0; k < piece2->m->ability.length; k++){
+                    for(int k = 0; k < piece2->ability.length; k++){
                         Point dest;
-                        add_vec_to_point(piece2->m->cur_loc,piece2->m->ability.directions[k],&dest);
+                        add_vec_to_point(piece2->cur_loc,piece2->ability.directions[k],&dest);
                         if(is_same_point(dest,kingLoc)){
                             if(board->can_move(board,piece2,dest)){
                                 finalFlag = true;
@@ -388,11 +388,10 @@ List legal_actions(Referee this, Board board, int side){
 
             if(piece->get_side(piece) != side) continue;
 
-            for (int i = 0; i < piece->m->ability.length; i++){
+            for (int k = 0; k < piece->ability.length; k++){
                 Point dest;
-                add_vec_to_point(piece->m->cur_loc, piece->m->ability.directions[i], &dest);
+                add_vec_to_point(piece->cur_loc, piece->ability.directions[k], &dest);
 
-                
                 if (this->is_legal_move(this, board, piece, dest)){
                     if(this->can_promote(this,piece,dest)){
                         Move move = {piece->get_location(piece),dest, true};
@@ -438,21 +437,15 @@ bool is_checkmated(Referee this, Board board, int side){
     }
 }
 
-Referee clone_referee(Referee this){
-    Referee new = new_referee(this->get_turn(this));
 
-    new->turn_count = this->turn_count;
-     for(int i = 0; i < 151; i++){
-        for(int j = 0; j < 46; j++){
-            new->history[i][j] = this->history[i][j];
+void copy_referee(Referee this, Referee copy){
+    copy->turn_count = this->turn_count;
+    copy->turn = this->turn;
+    for(int i = 0; i < HISTORY_ROW_NUM; i++){
+        for(int j = 0; j < HISTORY_COL_NUM; j++){
+            copy->history[i][j] = this->history[i][j];
         }
     }
-
-    return new;
-}
-
-void free_referee(Referee this){
-    free(this);
 }
 
 Referee new_referee(int turn){
@@ -479,12 +472,11 @@ Referee new_referee(int turn){
     instance->will_checkmate = will_checkmate;
     instance->legal_actions = legal_actions;
     instance->is_checkmated = is_checkmated;
-    instance->clone_referee = clone_referee;
-    instance->free_referee = free_referee;
+    instance->copy_referee = copy_referee;
 
   
     //historyを初期化
-    for(int i = 0; i < 151; i++){
+    for(int i = 0; i < 152; i++){
         for(int j = 0; j < 46; j++){
             instance->history[i][j] = '\0';
         }

@@ -118,9 +118,12 @@ void convert_action_into_string(Action action, char* str){
         str[1] = 'A' + start.x;
         str[2] = '5' - end.y;
         str[3] = 'A' + end.x;
+        str[4] = '\0';
+        str[5] = '\0';
 
         if(action.move.will_promote){
             str[4] = 'N';
+            
         }
 
 

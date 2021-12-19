@@ -15,25 +15,25 @@ Piece new_bishop(int side){
     Piece instance = new_piece();
 
     
-    strcpy(instance->m->name,"KK"); 
-    strcpy(instance->m->eng_name,"BISHOP");
-    strcpy(instance->m->idle_eng_name,"HORSE");
+    strcpy(instance->name,"KK"); 
+    strcpy(instance->eng_name,"BISHOP");
+    strcpy(instance->idle_eng_name,"HORSE");
     
 
-    instance->m->kind = BISHOP;
-    instance->m->idle_kind = HORSE;
+    instance->kind = BISHOP;
+    instance->idle_kind = HORSE;
 
-    instance->m->promoted = false;
+    instance->promoted = false;
 
     if (side == FIRST)
     {
-        instance->m->cur_loc.x = 3;
-        instance->m->cur_loc.y = 4;
+        instance->cur_loc.x = 3;
+        instance->cur_loc.y = 4;
     }
     else if (side == SECOND)
     {
-        instance->m->cur_loc.x = 1;
-        instance->m->cur_loc.y = 0;
+        instance->cur_loc.x = 1;
+        instance->cur_loc.y = 0;
     }
 
     int bishop_array[BISHOP_MOVE_NUM][2] = {
@@ -51,13 +51,13 @@ Piece new_bishop(int side){
         { 1, 0},{ 0, 1},{-1, 0},{0, -1}
         };
 
-    convert_array_into_vectors(bishop_array, BISHOP_MOVE_NUM, instance->m->ability.directions);
-    instance->m->ability.length = BISHOP_MOVE_NUM;
+    convert_array_into_vectors(bishop_array, BISHOP_MOVE_NUM, instance->ability.directions);
+    instance->ability.length = BISHOP_MOVE_NUM;
 
-    convert_array_into_vectors(promoted_bishop_array, PROMOTED_BISHOP_MOVE_NUM, instance->m->idle_ability.directions);
-    instance->m->idle_ability.length = PROMOTED_BISHOP_MOVE_NUM;
+    convert_array_into_vectors(promoted_bishop_array, PROMOTED_BISHOP_MOVE_NUM, instance->idle_ability.directions);
+    instance->idle_ability.length = PROMOTED_BISHOP_MOVE_NUM;
 
-    instance->m->side = side;
+    instance->side = side;
 
     return instance;
 }

@@ -7,7 +7,23 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+int count_pieces(Game game){
+    int count = 0;
 
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            if(game->board->board[i][j] != NULL) count++;
+        }
+    }
+
+    for(int i = 0; i < 2; i++){
+        for(int j =0; j < 10; j++){
+            if(game->board->captured_pieces[i][j] != NULL) count++;
+        }
+    }
+
+    return count;
+}
 void user_vs_cpu(Game game, void (*game_ai)()){
 
     Referee ref = game->ref;
@@ -165,7 +181,10 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
             printf("%d: %d's turn\n", ref->get_turn_count(ref),turn);
             
         }
-
+        if(count_pieces(game) != 12){
+            printf("Error!!!\n");
+            break;
+        }
 
         if(ref->is_checkmated(ref,board,turn)){
             if(turn == first_turn){
@@ -210,14 +229,17 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
         ref->update_turn(ref);
 
     }
+
+    return 0;
 }
 
 void free_game(Game game)
 {
     free(game->players[0]);
     free(game->players[1]);
-    game->ref->free_referee(game->ref);
+    free(game->ref);
     game->board->free_board(game->board);
+    free(game->board);
     free(game);
 }
 
@@ -236,32 +258,16 @@ void next_state(Game game, Action action){
         game->players[turn]->drop_my_captured(game->players[turn], action.drop, game->board, game->ref);
     }
 }
-//ゲームオブジェクトを複製する。初期状態をクローンしてはいけない
-Game clone_game(Game game){
-    Game new = malloc(sizeof(*new_game));
-    
-    Board board = game->board->clone_board(game->board);
-    Referee ref = game->ref->clone_referee(game->ref);
 
-    Player player0 = new_player(FIRST);
-    Player player1 = new_player(SECOND);
+void copy_game(Game this, Game copy){
+    this->board->copy_board(this->board,copy->board);
+    this->ref->copy_referee(this->ref, copy->ref);
 
-    player0->captured_pieces = board->captured_pieces[0];
-    player1->captured_pieces = board->captured_pieces[1];
+    copy->players[FIRST]->captured_pieces = copy->board->captured_pieces[FIRST];
+    copy->players[SECOND]->captured_pieces = copy->board->captured_pieces[SECOND];
+    copy->players[FIRST]->turn = this->players[FIRST]->turn;
+    copy->players[SECOND]->turn = this->players[SECOND]->turn;
 
-    new->board = board;
-    new->ref = ref;
-    new->players[0] = player0;
-    new->players[1] = player1;
-
-    new->user_vs_cpu = user_vs_cpu;
-    new->user_vs_user = user_vs_user;
-    new->cpu_vs_cpu = cpu_vs_cpu;
-    new->clone_game = clone_game;
-    new->free_game = free_game;
-    new->next_state = next_state;
-
-    return new;
 
 }
 
@@ -297,9 +303,9 @@ Game new_game(int side){
     instance->user_vs_cpu = user_vs_cpu;
     instance->user_vs_user = user_vs_user;
     instance->cpu_vs_cpu = cpu_vs_cpu;
-    instance->clone_game = clone_game;
     instance->free_game = free_game;
     instance->next_state = next_state;
+    instance->copy_game = copy_game;
 
 
 

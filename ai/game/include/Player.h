@@ -29,10 +29,11 @@ typedef struct referee_t *Referee;
 
 
 struct player_t {
-    bool (*move_my_piece)(Player,Move, Board,Referee);
-    bool (*drop_my_captured)(Player,Drop, Board,Referee);
     Piece *captured_pieces;
     int turn;
+    bool (*move_my_piece)(Player,Move, Board,Referee);
+    bool (*drop_my_captured)(Player,Drop, Board,Referee);
+    
 };
 
 Player new_player(int turn);

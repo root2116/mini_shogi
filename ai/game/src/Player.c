@@ -61,9 +61,6 @@ static bool drop_my_captured(Player this, Drop drop, Board board, Referee ref){
             remove_captured(this,piece->get_kind(piece));
             return true;
         }
-        else{
-            add_captured(this,piece);
-        }
         
     }
 
@@ -106,6 +103,7 @@ void remove_captured(Player this, PieceKind kind){
 
         if(piece->get_kind(piece) == kind){
             this->captured_pieces[i] = NULL;
+            break;
         } 
     }
 }

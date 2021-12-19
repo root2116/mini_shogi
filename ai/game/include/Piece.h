@@ -34,8 +34,29 @@ typedef struct {
     int length;
 }Ability;
 
-struct piece_member
-{
+// struct piece_member
+// {
+//     char name[3];
+//     char eng_name[12];
+//     char idle_eng_name[12];
+//     PieceKind kind;
+//     PieceKind idle_kind;
+//     bool promoted;
+//     Point cur_loc;
+//     int side;
+//     Ability ability;
+//     Ability idle_ability;
+// };
+
+struct piece_t;
+typedef struct piece_t *Piece;
+
+
+
+
+
+struct piece_t {
+
     char name[3];
     char eng_name[12];
     char idle_eng_name[12];
@@ -46,29 +67,21 @@ struct piece_member
     int side;
     Ability ability;
     Ability idle_ability;
-};
 
-struct piece_t;
-typedef struct piece_t *Piece;
-
-
-
-
-
-struct piece_t {
-    struct piece_member *m;
     bool (*move)(Piece,Point,Board,Referee,bool,Piece*);
     bool (*drop)(Piece,Point,Board,Referee);
     void (*betray)(Piece);
     void (*set_cur_loc_outside)(Piece);
     void (*promote)(Piece);
-    Piece (*clone_piece)(Piece);
-    void (*free_piece)(Piece);
+    void (*copy_piece)(Piece ,Piece);
     Point (*get_location)(Piece);
     int (*get_side)(Piece);
     int (*get_kind)(Piece);
     char *(*get_name)(Piece);
     char *(*get_eng_name)(Piece);
+
+    
+
     
 };
 
@@ -84,8 +97,7 @@ void betray(Piece);
 void set_cur_loc_outside(Piece);
 void promote(Piece);
 void demote(Piece);
-Piece clone_piece(Piece);
-void free_piece(Piece);
+void copy_piece(Piece, Piece);
 void copy_ability(Ability *original, Ability *dest);void swap_piece_attributes(Piece this);
 
 #endif

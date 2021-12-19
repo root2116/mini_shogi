@@ -14,21 +14,21 @@ Piece new_silver(int side){
    
    
 
-    strcpy(instance->m->name, "GI");
-    strcpy(instance->m->eng_name, "SILVER");
-    strcpy(instance->m->idle_eng_name, "NARI-SILVER");
+    strcpy(instance->name, "GI");
+    strcpy(instance->eng_name, "SILVER");
+    strcpy(instance->idle_eng_name, "NARI-SILVER");
 
-    instance->m->kind = SILVER;
-    instance->m->idle_kind = PROMOTED_SILVER;
+    instance->kind = SILVER;
+    instance->idle_kind = PROMOTED_SILVER;
 
-    instance->m->promoted = false;
+    instance->promoted = false;
 
     if(side == FIRST){
-        instance->m->cur_loc.x = 2;
-        instance->m->cur_loc.y = 4; 
+        instance->cur_loc.x = 2;
+        instance->cur_loc.y = 4; 
     }else if(side == SECOND){
-        instance->m->cur_loc.x = 2;
-        instance->m->cur_loc.y = 0;
+        instance->cur_loc.x = 2;
+        instance->cur_loc.y = 0;
     }
 
 
@@ -44,20 +44,20 @@ Piece new_silver(int side){
 
 
     if(side == FIRST){
-        convert_array_into_vectors(silver_array, SILVER_MOVE_NUM, instance->m->ability.directions);
-        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->m->idle_ability.directions);
+        convert_array_into_vectors(silver_array, SILVER_MOVE_NUM, instance->ability.directions);
+        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->idle_ability.directions);
 
     }else if(side == SECOND){
-        convert_array_into_vectors(silver_array, SILVER_MOVE_NUM, instance->m->ability.directions);
-        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->m->idle_ability.directions);
-        inverse_vectors(instance->m->ability.directions, SILVER_MOVE_NUM);
-        inverse_vectors(instance->m->idle_ability.directions, GOLD_MOVE_NUM);
+        convert_array_into_vectors(silver_array, SILVER_MOVE_NUM, instance->ability.directions);
+        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->idle_ability.directions);
+        inverse_vectors(instance->ability.directions, SILVER_MOVE_NUM);
+        inverse_vectors(instance->idle_ability.directions, GOLD_MOVE_NUM);
     }
     
-    instance->m->ability.length = SILVER_MOVE_NUM;
-    instance->m->idle_ability.length = GOLD_MOVE_NUM;
+    instance->ability.length = SILVER_MOVE_NUM;
+    instance->idle_ability.length = GOLD_MOVE_NUM;
 
-    instance->m->side = side;
+    instance->side = side;
     
    
     return instance;

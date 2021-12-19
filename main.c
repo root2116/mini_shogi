@@ -1,7 +1,9 @@
 #include "Game.h"
 #include "game_ai.h"
+#include <stdlib.h>
 int main(){
+    srand(42);
     Game game = new_game(FIRST);
-    game->cpu_vs_cpu(game,random_ai,mcs_ai);
+    evaluate_strength(game,random_ai,mcs_ai);
     return 0;
 }

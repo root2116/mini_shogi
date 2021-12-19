@@ -31,21 +31,23 @@ struct stack_t
 };
 
 struct board_t {
+    Piece board[5][5];
+    BoardStack stack;
+    Piece captured_pieces[2][10];
+
     void (*display_board)(Board,Player,Player);
     bool (*can_move)(Board, Piece, Point);
     Piece (*move_piece)(Board, Piece, Point);
     bool (*can_drop)(Board,Piece,Point);
     void (*drop_piece)(Board, Piece,Point);
     void (*create_next_board)(Board, Piece, Point);
-    void (*copy_board)(Board);
     void (*free_pieces)(Board);
-    void (*push_board)(Board);
+    void (*push_pieces)(Board);
     void (*restore_board)(Board);
-    Board (*clone_board)(Board);
+    void (*copy_board)(Board, Board);
     void (*free_board)(Board);
-    Piece board[5][5];
-    BoardStack stack;
-    Piece captured_pieces[2][10];
+    void (*swap_board)(Board);
+    
 };
 
 Board new_board();

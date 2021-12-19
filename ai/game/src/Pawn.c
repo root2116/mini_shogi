@@ -12,24 +12,24 @@ Piece new_pawn(int side){
     Piece instance = new_piece();
 
    
-    strcpy(instance->m->name, "FU");
-    strcpy(instance->m->eng_name, "PAWN");
-    strcpy(instance->m->idle_eng_name, "TO-GOLD");
+    strcpy(instance->name, "FU");
+    strcpy(instance->eng_name, "PAWN");
+    strcpy(instance->idle_eng_name, "TO-GOLD");
 
-    instance->m->kind = PAWN;
-    instance->m->idle_kind = PROMOTED_PAWN;
+    instance->kind = PAWN;
+    instance->idle_kind = PROMOTED_PAWN;
 
-    instance->m->promoted = false;
+    instance->promoted = false;
 
     if (side == FIRST)
     {
-        instance->m->cur_loc.x = 0;
-        instance->m->cur_loc.y = 3;
+        instance->cur_loc.x = 0;
+        instance->cur_loc.y = 3;
     }
     else if (side == SECOND)
     {
-        instance->m->cur_loc.x = 4;
-        instance->m->cur_loc.y = 1;
+        instance->cur_loc.x = 4;
+        instance->cur_loc.y = 1;
     }
 
     int pawn_array[PAWN_MOVE_NUM][2] = {
@@ -43,22 +43,22 @@ Piece new_pawn(int side){
 
    
     if(side == FIRST){
-        convert_array_into_vectors(pawn_array, PAWN_MOVE_NUM, instance->m->ability.directions);
-        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->m->idle_ability.directions);
+        convert_array_into_vectors(pawn_array, PAWN_MOVE_NUM, instance->ability.directions);
+        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->idle_ability.directions);
     }else if(side == SECOND){
-        convert_array_into_vectors(pawn_array, PAWN_MOVE_NUM, instance->m->ability.directions);
-        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->m->idle_ability.directions);
-        inverse_vectors(instance->m->ability.directions, PAWN_MOVE_NUM);
-        inverse_vectors(instance->m->idle_ability.directions, GOLD_MOVE_NUM);
+        convert_array_into_vectors(pawn_array, PAWN_MOVE_NUM, instance->ability.directions);
+        convert_array_into_vectors(gold_array, GOLD_MOVE_NUM, instance->idle_ability.directions);
+        inverse_vectors(instance->ability.directions, PAWN_MOVE_NUM);
+        inverse_vectors(instance->idle_ability.directions, GOLD_MOVE_NUM);
 
     }
 
 
     
-    instance->m->ability.length = PAWN_MOVE_NUM;
-    instance->m->idle_ability.length = GOLD_MOVE_NUM;
+    instance->ability.length = PAWN_MOVE_NUM;
+    instance->idle_ability.length = GOLD_MOVE_NUM;
 
-    instance->m->side = side;
+    instance->side = side;
 
     return instance;
 }
