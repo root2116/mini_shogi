@@ -16,7 +16,7 @@
 int playout(Game game){
     
     game->user_num = SECOND;
-    int value = -game->cpu_vs_cpu(game, random_ai, random_ai);
+    int value = game->cpu_vs_cpu(game, random_ai, random_ai);
 
 
     return value;
@@ -61,7 +61,7 @@ void mcs_ai(Game game, char* output){
         for(int j = 0; j < 5; j++){
             game->copy_game(game,copy);
             copy->next_state(copy, *action);
-            values[i] += playout(copy);
+            values[i] += -playout(copy);
         }
     }
 

@@ -99,7 +99,7 @@ Node next_child_node(Node this){
         t += this->child_nodes[i]->n;
     }
 
-    double max_ucb1 = 0.0;
+    double max_ucb1 = -100000000;
     int max_index;
 
     for(int i = 0; i < this->n_of_children; i++){
