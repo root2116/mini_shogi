@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int file(char input)
 { //試合で指された手をテキストファイルに保存
@@ -201,6 +202,8 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
             printf("%d: %d's turn\n", ref->get_turn_count(ref),turn);
             
         }
+
+        //将来的に消す
         if(count_pieces(game) != 12){
             printf("Error!!!\n");
             break;
@@ -220,16 +223,19 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
         }
         
         init_string(input,'\0');
-
+        
+        clock_t start = clock();
         if(turn == FIRST){
             game_ai0(game,input);
         }else{
             game_ai1(game,input);
         }
+        clock_t end = clock();
+        double thinking_time = (double)(end - start)/CLOCKS_PER_SEC; 
 
         if(game->user_num == FIRST){
 
-            printf("%s\n",input);
+            printf("%s (%4.2lf s)\n",input,thinking_time);
         }
         
 
