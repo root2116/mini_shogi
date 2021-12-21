@@ -9,14 +9,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int file(char input){ //試合で指された手をテキストファイルに保存
+int file(char *input, char name){ //試合で指された手をテキストファイルに保存
 
     FILE *fout;
     //char name[256];
-    //scanf("%s", name);//error;&?
+    scanf("%s", name);
     //fp = fopen("test.txt", "r")) != NULL
-    if ((fout = fopen("te.txt", "w")) != NULL){ //error
-        fprintf(fout, "%s", input);
+    if ((fout = fopen(name, "wa")) != NULL){ //w?
+        fprintf(fout, "%s\n", input);
         fclose(fout);
     }
     else
@@ -104,7 +104,8 @@ void start_game(){
         
         ref->display_history(ref);
         ref->update_turn(ref);
-
-        file(input);
+        
+        char name[256];
+        file(input, name);
     }
 }
