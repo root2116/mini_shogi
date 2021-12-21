@@ -1,7 +1,7 @@
 #ifndef INCLUDED_BOARD
 #define INCLUDED_BOARD
 
-#include "game.h"
+
 
 
 #include <stdbool.h>
@@ -11,7 +11,8 @@
 struct stack_t;
 typedef struct stack_t BoardStack;
 
-
+struct point_t;
+typedef struct point_t Point;
 
 struct piece_t;
 typedef struct piece_t *Piece;
@@ -30,20 +31,23 @@ struct stack_t
 };
 
 struct board_t {
+    Piece board[5][5];
+    BoardStack stack;
+    Piece captured_pieces[2][10];
+
     void (*display_board)(Board,Player,Player);
     bool (*can_move)(Board, Piece, Point);
     Piece (*move_piece)(Board, Piece, Point);
     bool (*can_drop)(Board,Piece,Point);
     void (*drop_piece)(Board, Piece,Point);
     void (*create_next_board)(Board, Piece, Point);
-    void (*clone_board)(Board);
-    void (*free_board)(Board);
-    void (*push_board)(Board);
+    void (*free_pieces)(Board);
+    void (*push_pieces)(Board);
     void (*restore_board)(Board);
-    Piece board[5][5];
-    BoardStack stack;
-    Piece board_copy[5][5];
-    Piece captured_pieces[2][10];
+    void (*copy_board)(Board, Board);
+    void (*free_board)(Board);
+    void (*swap_board)(Board);
+    
 };
 
 Board new_board();

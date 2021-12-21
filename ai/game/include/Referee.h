@@ -1,10 +1,19 @@
 #ifndef INCLUDED_REFEREE
 #define INCLUDED_REFEREE
 
-#include "game.h"
-#include "list.h"
+
 
 #include <stdbool.h>
+
+
+#define HISTORY_ROW_NUM 152
+#define HISTORY_COL_NUM 46
+
+struct point_t;
+typedef struct point_t Point;
+
+struct list_t;
+typedef struct list_t *List;
 
 struct piece_t;
 typedef struct piece_t *Piece;
@@ -20,6 +29,11 @@ typedef struct referee_t *Referee;
 
 struct referee_t
 {
+
+    char history[HISTORY_ROW_NUM][HISTORY_COL_NUM];
+    int turn;
+    int turn_count;
+
     void (*display_history)(Referee);
     void (*update_turn)(Referee);
     void (*increment_turn_count)(Referee);
@@ -36,9 +50,8 @@ struct referee_t
     bool (*will_checkmate)(Referee, Board, Piece, Point);
     List (*legal_actions)(Referee,Board, int);
     bool (*is_checkmated)(Referee, Board, int);
-    char history[151][46];
-    int turn;
-    int turn_count;
+    void (*copy_referee)(Referee, Referee);
+    
 };
 
 Referee new_referee(int turn);

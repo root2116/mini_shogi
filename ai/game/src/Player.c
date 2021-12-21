@@ -1,7 +1,8 @@
-#include "../include/Player.h"
-#include "../include/game.h"
-#include "../include/Board.h"
-#include "../include/Piece.h"
+#include "Player.h"
+#include "Game.h"
+#include "Board.h"
+#include "Piece.h"
+#include "Referee.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,12 +12,13 @@
 Player new_player(int turn){
 
     
-    Player player = calloc(1,sizeof(*player));
+    Player player = malloc(sizeof(*player));
 
     player->move_my_piece = move_my_piece;
     player->drop_my_captured = drop_my_captured;
 
     player->turn = turn;
+    
 
 
     return player;
@@ -58,9 +60,6 @@ static bool drop_my_captured(Player this, Drop drop, Board board, Referee ref){
         if(piece->drop(piece, drop.loc, board, ref)){
             remove_captured(this,piece->get_kind(piece));
             return true;
-        }
-        else{
-            add_captured(this,piece);
         }
         
     }
@@ -104,6 +103,7 @@ void remove_captured(Player this, PieceKind kind){
 
         if(piece->get_kind(piece) == kind){
             this->captured_pieces[i] = NULL;
+            break;
         } 
     }
 }
