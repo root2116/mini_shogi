@@ -79,6 +79,7 @@ struct piece_t {
     int (*get_kind)(Piece);
     char *(*get_name)(Piece);
     char *(*get_eng_name)(Piece);
+    void (*force_move)(Piece,int,int);
 
     
 
