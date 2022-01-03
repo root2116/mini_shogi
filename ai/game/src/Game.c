@@ -329,6 +329,8 @@ Game new_game(int side){
     Player player0 = new_player(FIRST);
     Player player1 = new_player(SECOND);
 
+    board->read_pre_board(board);
+
     player0->captured_pieces = board->captured_pieces[0];
     player1->captured_pieces = board->captured_pieces[1];
     

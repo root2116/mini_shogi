@@ -59,6 +59,7 @@ Piece new_piece(){
     piece->move = move;
     piece->drop = drop;
     piece->promote = promote;
+    piece->force_move = force_move;
     piece->copy_piece = copy_piece;
 
 
