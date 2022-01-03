@@ -47,6 +47,7 @@ struct board_t {
     void (*copy_board)(Board, Board);
     void (*free_board)(Board);
     void (*swap_board)(Board);
+    void (*read_pre_board)(Board);
     
 };
 

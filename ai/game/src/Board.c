@@ -483,6 +483,106 @@ void copy_board(Board this, Board copy){
     }
 }
 
+void read_pre_board(Board this){
+    FILE *fp;
+    fp = fopen("pre_board.txt", "r");
+    char board_row[7][11];
+    if (fp==NULL){
+        printf("ファイルを開けませんでした。\n");
+    }else{
+        for (int i=0; i<7; i++){
+            fscanf(fp, "%s", board_row[i]);
+        }
+
+        for (int i=0; i < 5; i++){
+            for (int j=0; j < 5; j++){
+                if (board_row[i][j] == '.'){
+                    this->board[i][j] = NULL;
+                }else if (board_row[i][j] == 'R'){
+                    Piece rook0 = new_rook(FIRST);
+                    rook0->force_move(rook0, j, i);
+                    this->board[i][j] = rook0;
+                }else if (board_row[i][j] == 'r'){
+                    Piece rook1 = new_rook(SECOND);
+                    rook1->force_move(rook1, j, i);
+                    this->board[i][j] = rook1;
+                }else if (board_row[i][j] == 'B'){
+                    bishop0 = new_bishop(FIRST);
+                    bishop0->force_move(bishop0, j, i);
+                    this->board[i][j] = bishop0;
+                }else if (board_row[i][j] == 'b'){
+                    bishop1 = new_bishop(SECOND);
+                    bishop1->force_move(bishop1, j, i);
+                    this->board[i][j] = bishop1;
+                }else if (board_row[i][j] == 'S'){
+                    silver0 = new_silver(FIRST);
+                    silver0->force_move(silver0, j, i);
+                    this->board[i][j] = silver0;
+                }else if (board_row[i][j] == 's'){
+                    silver1 = new_silver(SECOND);
+                    silver1->force_move(silver1, j, i);
+                    this->board[i][j] = silver1;
+                }else if (board_row[i][j] == 'G'){
+                    gold0 = new_gold(FIRST);
+                    gold0->force_move(gold0, j, i);
+                    this->board[i][j] = gold0;
+                }else if (board_row[i][j] == 'g'){
+                    gold1 = new_gold(SECOND);
+                    gold1->force_move(gold1, j, i);
+                    this->board[i][j] = gold1;
+                }else if (board_row[i][j] == 'K'){
+                    king0 = new_king(FIRST);
+                    king0->force_move(king0, j, i);
+                    this->board[i][j] = king0;
+                }else if (board_row[i][j] == 'k'){
+                    king1 = new_king(SECOND);
+                    king1->force_move(king1, j, i);
+                    this->board[i][j] = king1;
+                }else if (board_row[i][j] == 'P'){
+                    pawn0 = new_pawn(FIRST);
+                    pawn0->force_move(pawn0, j, i);
+                    this->board[i][j] = pawn0;
+                }else if (board_row[i][j] == 'p'){
+                    pawn1 = new_pawn(SECOND);
+                    pawn1->force_move(pawn1, j, i);
+                    this->board[i][j] = pawn1;
+                }
+            }
+        }
+        
+        int order[2] = {FIRST, SECOND};
+        for (int i=0; i<2; i++){
+            for (int j=0; j<10; j++){
+                if (board_row[5+i][j] == 'R'){
+                    Piece rook = new_rook(order[i]);
+                    rook->set_cur_loc_outside(rook);
+                    this->add_piece_to_captured_pieces(this, rook);
+                }else if (board_row[5+i][j] == 'B'){
+                    bishop = new_bishop(order[i]);
+                    bishop->set_cur_loc_outside(bishop);
+                    this->add_piece_to_captured_pieces(this, bishop);
+                }else if (board_row[5+i][j] == 'S'){
+                    silver = new_silver(order[i]);
+                    silver->set_cur_loc_outside(silver);
+                    this->add_piece_to_captured_pieces(this, silver);
+                }else if (board_row[5+i][j] == 'G'){
+                    gold = new_gold(order[i]);
+                    gold->set_cur_loc_outside(gold);
+                    this->add_piece_to_captured_pieces(this, gold);
+                }else if (board_row[5+i][j] == 'K'){
+                    king = new_king(order[i]);
+                    king->set_cur_loc_outside(king);
+                    this->add_piece_to_captured_pieces(this, king);
+                }else if (board_row[5+i][j] == 'P'){
+                    pawn = new_pawn(order[i]);
+                    pawn->set_cur_loc_outside(pawn);
+                    this->add_piece_to_captured_pieces(this, pawn);
+                }
+            }
+        }
+    }
+}
+
 
 Board new_board()
 {
@@ -500,6 +600,7 @@ Board new_board()
     instance->free_board = free_board;
     instance->copy_board = copy_board;
     instance->swap_board = swap_board;
+    instance->read_pre_board = read_pre_board:
 
     
 

@@ -175,6 +175,11 @@ void demote(Piece this){
 
 }
 
+void force_move(Piece this, int x, int y){
+    this->cur_loc.x = x;
+    this->cur_loc.y = y;
+}
+
 
 
 

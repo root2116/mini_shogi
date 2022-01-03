@@ -97,6 +97,7 @@ void betray(Piece);
 void set_cur_loc_outside(Piece);
 void promote(Piece);
 void demote(Piece);
+void force_move(Piece,int,int);
 void copy_piece(Piece, Piece);
 void copy_ability(Ability *original, Ability *dest);void swap_piece_attributes(Piece this);
 
