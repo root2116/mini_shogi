@@ -90,7 +90,7 @@ struct game_t {
     void (*free_game)(Game);
     void (*user_vs_cpu)(Game, void (*game_ai)());
     void (*user_vs_user)(Game );
-    int (*cpu_vs_cpu)(Game, void (*game_ai0)(), void (*game_ai1)());
+    int (*cpu_vs_cpu)(Game, void (*game_ai0)(), void (*game_ai1)(), bool verbose);
     void (*next_state)(Game, Action);
     void (*copy_game)(Game, Game);
     bool (*is_done)(Game);

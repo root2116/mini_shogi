@@ -180,7 +180,7 @@ void user_vs_user(Game game){
 }
 
 
-int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
+int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)(), bool verbose){
     Board board = game->board;
     Referee ref = game->ref;
     Player players[2] = {game->players[0],game->players[1]};
@@ -197,8 +197,12 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
         
         int turn = ref->get_turn(ref);
         if(game->user_num == FIRST){
-            board->display_board(board, players[0], players[1]);
-            printf("%d: %d's turn\n", ref->get_turn_count(ref),turn);
+            
+            if(verbose){
+                board->display_board(board, players[0], players[1]);
+                printf("%d: %d's turn\n", ref->get_turn_count(ref), turn);
+            }
+            
             
         }
 
@@ -233,8 +237,10 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
         double thinking_time = (double)(end - start)/CLOCKS_PER_SEC; 
 
         if(game->user_num == FIRST){
-
-            printf("%s (%4.2lf s)\n",input,thinking_time);
+            if(verbose){
+                printf("%s (%4.2lf s)\n", input, thinking_time);
+            }
+            
         }
         
 

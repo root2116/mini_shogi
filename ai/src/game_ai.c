@@ -16,7 +16,7 @@
 int playout(Game game){
     
     game->user_num = SECOND;
-    int value = game->cpu_vs_cpu(game, random_ai, random_ai);
+    int value = game->cpu_vs_cpu(game, random_ai, random_ai, false);
 
 
     return value;
@@ -121,7 +121,7 @@ void evaluate_strength(AI ai0, AI ai1){
         printf("%s: %d\n", ai1->name,lose);
         printf("draw: %d\n", draw);
 
-        int result = game->cpu_vs_cpu(game,ai0->next_action,ai1->next_action);
+        int result = game->cpu_vs_cpu(game,ai0->next_action,ai1->next_action,false);
         if(result == 1){
             win++;
         }else if(result == -1){
