@@ -9,8 +9,6 @@ typedef struct referee_t *Referee;
 struct board_t;
 typedef struct board_t *Board;
 
-struct vector_t;
-typedef struct vector_t Vector;
 
 struct point_t;
 typedef struct point_t Point;
@@ -30,7 +28,7 @@ typedef struct point_t Point;
 #define MAX_DIRECTION 20
 
 typedef struct {
-    Vector directions[20];
+    Vector2D directions[20];
     int length;
 }Ability;
 

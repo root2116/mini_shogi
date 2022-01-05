@@ -147,10 +147,10 @@ static bool can_move(Board this, Piece piece, Point dest){
     }
 
     //射線上に駒があると動かせない
-    Vector move_vec = {dest.x - piece->get_location(piece).x, dest.y - piece->get_location(piece).y};
+    Vector2D move_vec = {dest.x - piece->get_location(piece).x, dest.y - piece->get_location(piece).y};
     int vec_gcd = gcd(abs(move_vec.x),abs(move_vec.y));
 
-    Vector coprime_move_vec = {move_vec.x / vec_gcd, move_vec.y / vec_gcd};
+    Vector2D coprime_move_vec = {move_vec.x / vec_gcd, move_vec.y / vec_gcd};
 
     Point scan = piece->get_location(piece);
     

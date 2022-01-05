@@ -36,11 +36,11 @@ enum piece_kind
 
 typedef enum piece_kind PieceKind;
 
-struct vector_t;
-typedef struct vector_t Vector;
+struct vector2d_t;
+typedef struct vector2d_t Vector2D;
 
 
-struct vector_t
+struct vector2d_t
 {
     int x;
     int y;

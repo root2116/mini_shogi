@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-void convert_array_into_vectors(int array[][2], int len, Vector* vecs){
+void convert_array_into_vectors(int array[][2], int len, Vector2D* vecs){
     
 
     for(int i = 0; i < len; i++){
@@ -15,7 +15,7 @@ void convert_array_into_vectors(int array[][2], int len, Vector* vecs){
 
 }
 
-void add_vec_to_point(Point a, Vector v, Point *b)
+void add_vec_to_point(Point a, Vector2D v, Point *b)
 {
     
     b->x = a.x + v.x;
@@ -92,7 +92,7 @@ void multiply_array_by_minus(int array[][2], int len){
 
 }
 
-void inverse_vectors(Vector *vecs, int len){
+void inverse_vectors(Vector2D *vecs, int len){
     for(int i = 0; i < len; i++){
         vecs[i].x = -vecs[i].x;
         vecs[i].y = -vecs[i].y;

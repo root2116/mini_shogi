@@ -12,14 +12,34 @@
 #include "Rook.h"
 #include "Silver.h"
 
+#include "matrix.h"
+#include "tensor.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 
+#define CHANNEL_NUM 40
+
+static int count_lines(FILE *fp){
+    char data[32];
+
+    int line_count = 0;
+    while (fgets(data, 32, fp) != NULL)
+    {
+        line_count++;
+    }
+
+    rewind(fp);
+
+    return line_count;
+}
+
 void genenrate_data(char* file_name1, char* file_name2, int num){
     
-
-    for(int i = 0; i < num; i++ ){
+    int count = 0;
+    while(count < num){
+        
         Game game = new_game(FIRST);
         int result = game->cpu_vs_cpu(game, random_ai, random_ai, false);
 
@@ -31,14 +51,20 @@ void genenrate_data(char* file_name1, char* file_name2, int num){
         FILE *fp2 = fopen(file_name2, "a");
 
         if(result == 1){
-            fprintf(fp2, "%d\n", 1);
+            for(int i = 0; i < game->ref->turn_count; i++){
+                fprintf(fp2, "%d\n", 1);
+            }
         }else{
-            fprintf(fp2,"%d\n",0);
+            for(int i = 0; i < game->ref->turn_count; i++){
+                fprintf(fp2, "%d\n", 0);
+            }
         }
         
         fclose(fp1);
         fclose(fp2);
         game->free_game(game);
+
+        count++;
     }
         
     
@@ -48,6 +74,7 @@ void save_data(FILE *fp, Game game){
 
 
     for(int i = 1; i <= game->ref->turn_count; i++){
+        
 
         Board board = restore_board_from_str(game->ref->history[i]);
 
@@ -84,6 +111,7 @@ void save_data(FILE *fp, Game game){
         save_captured_data(fp, board, ROOK, FIRST);
         save_captured_data(fp, board, ROOK, SECOND);
         
+        board->free_board(board);
     }
 }
 
@@ -130,15 +158,15 @@ void save_captured_data(FILE *fp, Board board, PieceKind kind, int side){
     int zeros[5][5] = {0};
 
     int count = 0;
-    for(int i = 0; i < 2; i++){
-        for(int j = 0; j < 10;j++){
-            Piece piece = board->captured_pieces[i][j];
-            if(piece == NULL) continue;
 
-            if(piece->kind == kind && piece->side == side){
-                count++;
-                
-            }
+    for(int i = 0; i < 10; i++){
+        Piece piece = board->captured_pieces[side][i];
+        if (piece == NULL)
+            continue;
+
+        if (piece->kind == kind)
+        {
+            count++;
         }
     }
 
@@ -308,7 +336,7 @@ Board restore_board_from_str(char board_str[]){
 
     for(int i = 0; i < 2; i++){
         for(int j = 0; j < 10; j++){
-            char piece_str = board_str[25 + i * 2 + j];
+            char piece_str = board_str[25 + i * 10 + j];
 
             if(piece_str == '.'){
                 board->captured_pieces[i][j] = NULL;
@@ -379,3 +407,161 @@ Board restore_board_from_str(char board_str[]){
 
     return board;
 }
+
+
+Tensor load_x_train_data(char *file_name){
+
+    FILE *fp = fopen(file_name, "r");
+    
+    int line_count = count_lines(fp);
+
+    int train_size = line_count / (5*CHANNEL_NUM);
+    Tensor R = create_tensor(train_size,CHANNEL_NUM, 5, 5);
+    
+    int i = 0, j = 0, k = 0, l = 0;
+
+    char data[32];
+    
+    
+    while(i < train_size){
+        fgets(data,32,fp);
+        char *p = data;
+        char *head = data;
+
+        l = 0;
+        while (*p != '\n')
+        {
+            head = p;
+            while (*p != ' ')
+            {
+                p++;
+            }
+            *p = '\0';
+            write_tensor(atof(head),R,i,j,k,l);
+            p++;
+            l++;
+        }
+        k++;
+        if(k == 5){
+            k = 0;
+            j++;
+            if(j == CHANNEL_NUM){
+                j = 0;
+                i++;
+            }
+        }
+    }
+
+    fclose(fp);
+
+    return R;
+}
+
+Vector load_x_label_data(char *file_name){
+    FILE *fp = fopen(file_name, "r");
+
+    char data[32];
+
+    int line_count = count_lines(fp);
+   
+    int train_size = line_count / (5*CHANNEL_NUM);
+    Vector r = create_vector(train_size);
+
+    
+    int i = 0;
+    while (i < train_size)
+    {
+        fgets(data, 32, fp);
+        r->elements[i] = atof(data);
+        i++;
+    }
+
+
+
+    return r;
+}
+
+Tensor load_t_test_data(char* file_name){
+    FILE *fp = fopen(file_name, "r");
+    int i = 0, j = 0, k = 0, l = 0;
+
+    char data[32];
+
+   int line_count = count_lines(fp);
+
+    int test_size = line_count / (5*CHANNEL_NUM);
+
+    Tensor R = create_tensor(test_size, CHANNEL_NUM, 5, 5);
+    
+    while(i < test_size){
+        fgets(data,32,fp);
+        char *p = data;
+        char *head = data;
+
+        l = 0;
+        while (*p != '\n')
+        {
+            head = p;
+            while (*p != ' ' )
+            {
+                p++;
+            }
+            *p = '\0';
+            write_tensor(atof(head),R,i,j,k,l);
+            p++;
+            l++;
+        }
+        k++;
+        if(k == 5){
+            k = 0;
+            j++;
+            if(j == CHANNEL_NUM){
+                j = 0;
+                i++;
+            }
+        }
+    }
+
+    fclose(fp);
+
+}
+
+Vector load_t_label_data(char *file_name){
+    FILE *fp = fopen(file_name, "r");
+
+    char data[32];
+    int line_count = count_lines(fp);
+    int test_size = line_count / (5*CHANNEL_NUM);
+
+    Vector r = create_vector(test_size);
+
+    int i = 0;
+    while (i < test_size)
+    {
+        fgets(data, 32, fp);
+        r->elements[i] = atof(data);
+        i++;
+    }
+
+    return r;
+}
+
+
+void print_data(Tensor x){
+    for(int i = 0; i < x->num; i++){
+        printf("%d :n\n",i);
+        for(int j = 0; j < x->chs; j++){
+            printf("%d :ch\n",j);
+            for(int k = 0; k < x->rows; k++){
+                for(int l = 0; l < x->cols; l++){
+                    printf("%lf ",read_tensor(x,i,j,k,l));
+                }
+                printf("\n");
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+}
+
+
