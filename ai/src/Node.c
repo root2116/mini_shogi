@@ -8,12 +8,20 @@
 #include <stdlib.h>
 #include <math.h>
 
-void init(Node this, Game game){
+void init(Node this, Game game, ValueNet net, int weight_type){
     
     this->game = game;
+    this->net = net;
     this->weight = 0;
     this->n = 0;
     this->child_nodes = NULL;
+    this->weight_type = weight_type;
+    if(weight_type == Playout){
+        this->iter = 10;
+    }else if(weight_type == CNN){
+        this->iter = 1;
+    }
+    
 
     this->evaluate = evaluate;
     this->expand = expand;
@@ -23,7 +31,7 @@ void init(Node this, Game game){
 
 int evaluate(Node this){
     if(this->game->is_done(this->game)){
-        int value;
+        double value;
         if(this->game->is_lose(this->game)) value = -1;
         else value = 0;
 
@@ -36,21 +44,34 @@ int evaluate(Node this){
         Game copy = new_game(SECOND);
         this->game->copy_game(this->game, copy);
 
-        int value = playout(copy);
+        double value;
+        if(this->weight_type == Playout){
+            value = playout(copy);
+        }else if(this->weight_type == CNN){
+
+            if(copy->ref->turn == FIRST){
+                //FIRSTから見た今の盤面の価値を返す
+                value = this->net->predict_value(this->net, copy);
+            }else{
+                value = 1 - this->net->predict_value(this->net,copy);
+            }
+            
+        }
 
         this->weight += value;
         this->n++;
 
-        if(this->n == 10){
+        if(this->n == this->iter){
             this->expand(this);
         }
         
         return value;
+
     }else{
 
         Node next_child = this->next_child_node(this);
 
-        int value = -next_child->evaluate(next_child);
+        double value = -next_child->evaluate(next_child);
         this->weight += value;
         this->n++;
         return value;
@@ -77,7 +98,7 @@ void expand(Node this){
         game->copy_game(game, copy);
         child_nodes[i]->init = init;
         copy->next_state(copy,*get_nth(next_actions,i));
-        child_nodes[i]->init(child_nodes[i],copy);
+        child_nodes[i]->init(child_nodes[i],copy,this->net, this->weight_type);
         
     }
 
@@ -103,7 +124,7 @@ Node next_child_node(Node this){
     int max_index;
 
     for(int i = 0; i < this->n_of_children; i++){
-        int weight = this->child_nodes[i]->weight;
+        double weight = this->child_nodes[i]->weight;
         int n = this->child_nodes[i]->n;
         double ucb1_value = -(double)weight/n + sqrt((2*log(t)/n));
         if(ucb1_value > max_ucb1){
@@ -138,15 +159,21 @@ void free_node(Node this){
 
 }
 
-Node new_node(Game game){
+Node new_node(Game game, ValueNet net, int weight_type){
     Node instance = calloc(1,sizeof(*instance));
 
     instance->game = game;
+    instance->net = net;
     instance->weight = 0;
     instance->n = 0;
     instance->child_nodes = NULL;
     instance->n_of_children = 0;
-
+    instance->weight_type = weight_type;
+    if(weight_type == Playout){
+        instance->iter = 10;
+    }else if(weight_type == CNN){
+        instance->iter = 1;
+    }
     instance->evaluate = evaluate;
     instance->expand = expand;
     instance->next_child_node = next_child_node;

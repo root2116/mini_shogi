@@ -48,6 +48,22 @@ Vector create_vector_from_file(const char* file_path, int size){
     return new_vec;
 }
 
+Vector create_vector_from_binary_file(const char* file_path, int size){
+    FILE *fp = fopen(file_path, "rb");
+
+    double *elements = malloc(size*sizeof(double));
+    fread(elements, sizeof(double), size, fp);
+
+    fclose(fp);
+
+    Vector v = malloc(sizeof(*v));
+
+    v->size = size;
+    v->elements = elements;
+
+    return v;
+}
+
 Matrix create_matrix(int rows, int cols){
     Matrix new_matrix = malloc(sizeof(*new_matrix));
 
@@ -103,6 +119,23 @@ Matrix create_matrix_from_file(const char *file_path, int rows, int cols){
     }
 
     return new_matrix;
+}
+
+Matrix create_matrix_from_binary_file(const char *file_name, int rows, int cols){
+    FILE *fp = fopen(file_name, "rb");
+
+    double *elements = malloc(rows*cols*sizeof(double));
+    fread(elements, sizeof(double), rows*cols, fp);
+
+    fclose(fp);
+
+    Matrix M = malloc(sizeof(*M));
+
+    M->rows = rows;
+    M->cols = cols;
+    M->elements = elements;
+
+    return M;
 }
 
 Matrix create_matrix_at_random(int rows, int cols){
@@ -282,6 +315,15 @@ void save_matrix(char* file_name, const Matrix M){
 
     fclose(fp);
     
+}
+
+void save_matrix_as_binary(char *file_name, const Matrix M){
+
+    FILE *fp = fopen(file_name, "wb");
+
+    fwrite(M->elements,sizeof(double), M->rows*M->cols, fp);
+
+    fclose(fp);
 }
 
 void free_vector(Vector v){
@@ -573,5 +615,27 @@ void save_vector(char* file_name, Vector v){
     }
 
     fclose(fp);
+
+}
+
+void save_vector_as_binary(char* file_name, Vector v){
+    FILE *fp = fopen(file_name, "wb");
+
+    fwrite(v->elements, sizeof(double), v->size, fp);
+
+    fclose(fp);
+
+    
+}
+
+
+void check_validity(Vector t){
+    for(int i = 0; i < t->size; i++){
+        if(t->elements[i] != 0 && t->elements[i] != 1){
+            printf("Invalid value found.\n");
+            return;
+        }
+    }
+
 
 }

@@ -12,7 +12,8 @@ typedef struct game_t *Game;
 
 void random_ai(Game ,char*);
 void mcs_ai(Game, char*);
-int playout(Game);
+double playout(Game);
 void evaluate_strength(AI ai0, AI ai1);
 void mcts_ai(Game, char*);
+void cnn_mcts_ai(Game, char *);
 #endif

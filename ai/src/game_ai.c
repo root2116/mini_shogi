@@ -12,15 +12,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+ValueNet value_net;
 
-int playout(Game game){
+double playout(Game game){
     
     game->user_num = SECOND;
-    int value = game->cpu_vs_cpu(game, random_ai, random_ai, false);
+    double value = game->cpu_vs_cpu(game, random_ai, random_ai, false);
 
 
     return value;
     
+}
+
+void load_value_net(){
+    load_params(value_net);
 }
 
 void random_ai(Game game, char* output){
@@ -81,7 +86,7 @@ void mcts_ai(Game game, char* output){
     Game copy = new_game(SECOND);
     game->copy_game(game, copy);
 
-    Node root_node = new_node(copy);
+    Node root_node = new_node(copy,NULL, Playout);
     root_node->expand(root_node);
 
     for(int i = 0; i < 100; i++){
@@ -107,6 +112,41 @@ void mcts_ai(Game game, char* output){
     
 
 
+}
+
+void cnn_mcts_ai(Game game, char *output)
+{
+
+    Game copy = new_game(SECOND);
+    game->copy_game(game, copy);
+
+
+    Node root_node = new_node(copy, value_net, CNN);
+    root_node->expand(root_node);
+
+    for (int i = 0; i < 100; i++)
+    {
+        root_node->evaluate(root_node);
+    }
+
+    List next_actions = copy->ref->legal_actions(copy->ref, copy->board, copy->ref->get_turn(copy->ref));
+    int max_n = 0;
+    int max_index;
+
+    for (int i = 0; i < root_node->n_of_children; i++)
+    {
+        if (max_n < root_node->child_nodes[i]->n)
+        {
+            max_n = root_node->child_nodes[i]->n;
+            max_index = i;
+        }
+    }
+
+    Action *best_action = get_nth(next_actions, max_index);
+
+    convert_action_into_string(*best_action, output);
+    free_list(next_actions);
+    root_node->free_node(root_node);
 }
 
 void evaluate_strength(AI ai0, AI ai1){

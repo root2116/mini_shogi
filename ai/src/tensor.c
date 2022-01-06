@@ -400,7 +400,7 @@ Tensor create_data_batch_tensor(Tensor X, const int* batch_index, int size){
         for(int j = 0; j < 40; j++){
             for(int k = 0; k < 5; k++){
                 for(int l = 0; l < 5; l++){
-                    double value = read_tensor(T,batch_index[i],j,k,l);
+                    double value = read_tensor(X,batch_index[i],j,k,l);
                     write_tensor(value, T, i,j,k,l);
                 }
             }
@@ -409,3 +409,4 @@ Tensor create_data_batch_tensor(Tensor X, const int* batch_index, int size){
 
     return T;
 }
+

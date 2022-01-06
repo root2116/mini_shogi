@@ -15,25 +15,15 @@
 #include "matrix.h"
 #include "tensor.h"
 
+#include "util.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 
 #define CHANNEL_NUM 40
 
-static int count_lines(FILE *fp){
-    char data[32];
 
-    int line_count = 0;
-    while (fgets(data, 32, fp) != NULL)
-    {
-        line_count++;
-    }
-
-    rewind(fp);
-
-    return line_count;
-}
 
 void genenrate_data(char* file_name1, char* file_name2, int num){
     
@@ -41,9 +31,12 @@ void genenrate_data(char* file_name1, char* file_name2, int num){
     while(count < num){
         
         Game game = new_game(FIRST);
-        int result = game->cpu_vs_cpu(game, random_ai, random_ai, false);
+        printf("%d round\n", count);
+        int result = game->cpu_vs_cpu(game, mcts_ai, mcts_ai, true);
 
         if(result == 0) continue;
+
+       
 
 
         FILE *fp1 = fopen(file_name1,"a");
@@ -413,7 +406,7 @@ Tensor load_x_train_data(char *file_name){
 
     FILE *fp = fopen(file_name, "r");
     
-    int line_count = count_lines(fp);
+    int line_count = count_lines(file_name);
 
     int train_size = line_count / (5*CHANNEL_NUM);
     Tensor R = create_tensor(train_size,CHANNEL_NUM, 5, 5);
@@ -462,9 +455,9 @@ Vector load_x_label_data(char *file_name){
 
     char data[32];
 
-    int line_count = count_lines(fp);
+    int train_size = count_lines(file_name);
    
-    int train_size = line_count / (5*CHANNEL_NUM);
+    
     Vector r = create_vector(train_size);
 
     
@@ -487,7 +480,7 @@ Tensor load_t_test_data(char* file_name){
 
     char data[32];
 
-   int line_count = count_lines(fp);
+   int line_count = count_lines(file_name);
 
     int test_size = line_count / (5*CHANNEL_NUM);
 
@@ -524,14 +517,16 @@ Tensor load_t_test_data(char* file_name){
 
     fclose(fp);
 
+    return R;
+
 }
 
 Vector load_t_label_data(char *file_name){
     FILE *fp = fopen(file_name, "r");
 
     char data[32];
-    int line_count = count_lines(fp);
-    int test_size = line_count / (5*CHANNEL_NUM);
+    int test_size = count_lines(file_name);
+    
 
     Vector r = create_vector(test_size);
 
@@ -564,4 +559,103 @@ void print_data(Tensor x){
     }
 }
 
+
+void convert_piece_into_channel(Board board,Tensor T, int ch, PieceKind kind, int side)
+{
+
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            Piece piece = board->board[i][j];
+            if(piece == NULL){
+                write_tensor(0, T, 1, ch, i,  j);
+            }else if(piece->kind == kind && piece->side == side){
+                write_tensor(1, T, 1, ch, i, j);
+            }else{
+                write_tensor(0, T, 1, ch, i, j);
+            }
+        }
+    }
+
+}
+
+void convert_captured_into_channel(Board board, Tensor T, int ch, PieceKind kind, int side){
+
+    int count = 0;
+    for(int i = 0; i < 10; i++){
+        Piece piece = board->captured_pieces[side][i];
+        if(piece == NULL) continue;
+
+        if(piece->kind == kind){
+            count++;
+        }
+    }
+
+    if(count == 2){
+        for(int i =0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                write_tensor(1, T, 1, ch, i, j);
+                write_tensor(1, T, 1, ch+1, i, j);
+            }
+        }
+    }else if(count == 1){
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                write_tensor(1, T, 1, ch, i , j);
+                write_tensor(0, T, 1, ch+1, i, j);
+            }
+        }
+    }else{
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                write_tensor(0, T, 1, ch, i , j);
+                write_tensor(0, T, 1, ch+1, i, j);
+            }
+        }
+        
+    }
+
+
+}
+
+Tensor convert_board_into_tensor(Board board){
+    Tensor T = create_tensor(1,CHANNEL_NUM, 5, 5);
+
+    
+
+    convert_piece_into_channel(board, T, 0, PAWN, FIRST);
+    convert_piece_into_channel(board, T, 1, SILVER, FIRST);
+    convert_piece_into_channel(board, T, 2, GOLD, FIRST);
+    convert_piece_into_channel(board, T, 3, BISHOP, FIRST);
+    convert_piece_into_channel(board, T, 4, ROOK, FIRST);
+    convert_piece_into_channel(board, T, 5, KING, FIRST);
+    convert_piece_into_channel(board, T, 6, PROMOTED_PAWN, FIRST);
+    convert_piece_into_channel(board, T, 7, PROMOTED_SILVER, FIRST);
+    convert_piece_into_channel(board, T, 8, HORSE, FIRST);
+    convert_piece_into_channel(board, T, 9, DRAGON, FIRST);
+    convert_piece_into_channel(board, T, 10, PAWN, SECOND);
+    convert_piece_into_channel(board, T, 11, SILVER, SECOND);
+    convert_piece_into_channel(board, T, 12, GOLD, SECOND);
+    convert_piece_into_channel(board, T, 13, BISHOP, SECOND);
+    convert_piece_into_channel(board, T, 14, ROOK, SECOND);
+    convert_piece_into_channel(board, T, 15, KING, SECOND);
+    convert_piece_into_channel(board, T, 16, PROMOTED_PAWN, SECOND);
+    convert_piece_into_channel(board, T, 17, PROMOTED_SILVER, SECOND);
+    convert_piece_into_channel(board, T, 18, HORSE, SECOND);
+    convert_piece_into_channel(board, T, 19, DRAGON, SECOND);
+
+    convert_captured_into_channel(board, T, 20, PAWN, FIRST);
+    convert_captured_into_channel(board, T, 22, PAWN, SECOND);
+    convert_captured_into_channel(board, T, 24, SILVER, FIRST);
+    convert_captured_into_channel(board, T, 26, SILVER, SECOND);
+    convert_captured_into_channel(board, T, 28, GOLD, FIRST);
+    convert_captured_into_channel(board, T, 30, GOLD, SECOND);
+    convert_captured_into_channel(board, T, 32, BISHOP, FIRST);
+    convert_captured_into_channel(board, T, 34, BISHOP, SECOND);
+    convert_captured_into_channel(board, T, 36, ROOK, FIRST);
+    convert_captured_into_channel(board, T, 38, ROOK, SECOND);
+
+
+    return T;
+
+}
 

@@ -1,20 +1,30 @@
 #include "sigmoid.h"
 #include "matrix.h"
 #include "function.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 double forward(Sigmoid this, Matrix x, Vector t){
     this->t = t;
-
+    double delta = 1e-7;
     this->y = matrix_sigmoid(x);
 
+    
+    int batch_size = t->size;
     double loss = 0;
     for(int i = 0; i < this->y->rows; i++){
-        loss += -( t->elements[i] * log(this->y->elements[i]) + (1 - t->elements[i]) * log(1 - this->y->elements[i]));
+        
+        loss += -( t->elements[i] * log(this->y->elements[i] + delta) + (1 - t->elements[i]) * log(1 - this->y->elements[i] + delta));
     }
 
-    this->loss =  loss;
+    this->loss =  loss/batch_size;
+    if(this->loss < 0 ){
+        printf("Error\n");
+        save_matrix("x.txt",x);
+        save_matrix("y.txt", this->y);
+        save_vector("t.txt",t);
+    }
 
 
     return this->loss;

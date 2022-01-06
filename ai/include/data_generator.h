@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "Game.h"
 #include "tensor.h"
-
+#include "Board.h"
 
 void genenrate_data(char* file_name1,char* file_name2 ,int num);
 void save_data(FILE *fp, Game game);
@@ -15,5 +15,6 @@ Vector load_x_label_data(char *file_name);
 Tensor load_t_test_data(char *file_name);
 Vector load_t_label_data(char *file_name);
 void print_data(Tensor x);
+Tensor convert_board_into_tensor(Board board);
 
 #endif
