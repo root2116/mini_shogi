@@ -54,25 +54,36 @@ void user_vs_cpu(Game game, void (*game_ai)()){
     Move move = {0, 0, 0, 0, 0};
     Drop drop = {0, 0, NONE};
 
+    int turn = 0;
+
     while (1)
-    {   
+    {
         
+
         if(ref->is_checkmated(ref,board,ref->get_turn(ref))){
-            printf("Checkmate!\n");
-            break;
+            // printf("Checkmate!\n");
+            if(turn == game->user_num){
+                printf("You Lose\n");
+                return;
+            }else{
+                printf("You Win\n");
+                return;
+            }
+            
         }
         
         init_string(input,'\0');
 
-        board->display_board(board, players[0], players[1]);
-        printf("%d's turn\n", ref->get_turn(ref));
+        // board->display_board(board, players[0], players[1]);
+        // printf("%d's turn\n", ref->get_turn(ref));
 
-        int turn = ref->get_turn(ref);
+        
         
         if(turn == game->user_num){
             scanf("%s", input);
         }else{
             game_ai(game,input);
+            printf("%s\n", input);
         }
         
 
@@ -82,8 +93,15 @@ void user_vs_cpu(Game game, void (*game_ai)()){
             parse_move(input, &move);
             if (!players[turn]->move_my_piece(players[turn], move, board,ref))
             {
-                printf("Invalid move!\n");
-                continue;
+                // printf("Invalid move!\n");
+                if(turn == game->user_num){
+                    printf("You Lose\n");
+                    return;
+                }else{
+                    printf("You Win\n");
+                    return;
+                }
+                
             }
         }
         else
@@ -91,8 +109,14 @@ void user_vs_cpu(Game game, void (*game_ai)()){
             parse_drop(input, &drop);
             if (!players[turn]->drop_my_captured(players[turn], drop, board, ref))
             {
-                printf("Invalid drop!\n");
-                continue;
+                // printf("Invalid drop!\n");
+                if(turn == game->user_num){
+                    printf("You Lose\n");
+                    return;
+                }else{
+                    printf("You Win\n");
+                    return;
+                }
             }
         }
 
@@ -102,14 +126,15 @@ void user_vs_cpu(Game game, void (*game_ai)()){
         ref->increment_turn_count(ref);
         ref->record_board(ref,board);
 
-        if (ref->judge_check(ref,board,FIRST)) printf("1の王手です");
-        else if(ref->judge_check(ref,board,SECOND)) printf("0の王手です");
+        // if (ref->judge_check(ref,board,FIRST)) printf("1の王手です");
+        // else if(ref->judge_check(ref,board,SECOND)) printf("0の王手です");
 
-        if (ref->check_repetition(ref, board)) printf("千日手です");
-        else printf("千日手ではありません");
+        // if (ref->check_repetition(ref, board)) printf("千日手です");
+        // else printf("千日手ではありません");
         
-        ref->display_history(ref);
+        // ref->display_history(ref);
         ref->update_turn(ref);
+        turn = ref->get_turn(ref);
     }
 }
 
@@ -202,11 +227,6 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)()){
             
         }
 
-        //将来的に消す
-        if(count_pieces(game) != 12){
-            printf("Error!!!\n");
-            break;
-        }
 
         if(ref->is_checkmated(ref,board,turn)){
             if(turn == first_turn){
