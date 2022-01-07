@@ -72,11 +72,24 @@ static int get_turn_count(Referee this){
 }
 
 //合法手か？
-static bool is_legal_move(Referee this, Board board, Piece piece, Point dest){
+static bool is_legal_move(Referee this, Board board, Piece piece, Point dest, bool will_promote){
+
+
     if(board->can_move(board,piece,dest) == false) return false;
 
     if(this->will_be_checked(this,board,piece,dest)) return false;
 
+    //歩は成れるなら必ず成る
+    if (piece->get_kind(piece) == PAWN && this->can_promote(this, piece, dest) && will_promote == false)
+        return false;
+
+    //金と王は成れない
+    if(will_promote && ((piece->get_kind(piece) == GOLD) || (piece->get_kind(piece) == KING))) return false;
+
+    //成れないのに成ることはできない
+    if (will_promote && !this->can_promote(this, piece, dest)) return false;
+
+    
     board->create_next_board(board,piece,dest);
 
 
@@ -392,16 +405,15 @@ List legal_actions(Referee this, Board board, int side){
                 Point dest;
                 add_vec_to_point(piece->cur_loc, piece->ability.directions[k], &dest);
 
-                if (this->is_legal_move(this, board, piece, dest)){
-                    if(this->can_promote(this,piece,dest)){
-                        Move move = {piece->get_location(piece),dest, true};
-                        add(&list,move,empty_drop);
-                    }
-                    Move move = {piece->get_location(piece),dest, false};
-                    add(&list,move,empty_drop);
-                    
+                if (this->is_legal_move(this, board, piece, dest, true)){
+                    Move move = {piece->get_location(piece), dest, true};
+                    add(&list, move, empty_drop);
                 }
-                       
+
+                if (this->is_legal_move(this, board, piece, dest, false)){
+                    Move move = {piece->get_location(piece), dest, false};
+                    add(&list, move, empty_drop);
+                }
             }
             
         }
