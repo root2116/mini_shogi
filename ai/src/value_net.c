@@ -9,6 +9,7 @@
 #include "affine_tensor.h"
 #include "function.h"
 #include "optimizer.h"
+#include "math.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -258,6 +259,10 @@ static Tensor tensor_numerical_gradient(ValueNet net, Tensor T, Tensor x, Vector
     {
         for (int j = 0; j < T->chs; j++)
         {
+            if(j % 5 == 0){
+                printf("%d\n",j);
+            }
+
             for (int k = 0; k < T->rows; k++)
             {
                 for (int l = 0; l < T->cols; l++)
@@ -283,7 +288,7 @@ static Tensor tensor_numerical_gradient(ValueNet net, Tensor T, Tensor x, Vector
 static Params numerical_gradient(ValueNet net, Tensor x, Vector t)
 {
     Params grads = malloc(sizeof(*grads));
-
+    
     for(int i = 0; i < CONV_DEPTH; i++){
         grads->W[i] = tensor_numerical_gradient(net, net->params->W[i], x, t);
         grads->b[i] = vector_numerical_gradient(net, net->params->b[i], x, t);
@@ -313,32 +318,38 @@ ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter
 
     //filter_num = 80, input_chs = 40, filter_size = 3
     Tensor tmp1 = create_tensor_at_random(filter_num, input_chs, filter_size, filter_size);
-    instance->params->W[0] = scalar_tensor(tmp1, weight_init_std);
+    double he1 = sqrt(2.0) / sqrt(input_chs);
+    instance->params->W[0] = scalar_tensor(tmp1, he1);
     instance->params->b[0] = create_vector(filter_num);
     
-
+    double he2 = sqrt(2) / sqrt(filter_num);
     for(int i = 1; i < CONV_DEPTH - 1; i++){
         Tensor tmp = create_tensor_at_random(filter_num, filter_num, filter_size, filter_size);
-        instance->params->W[i] = scalar_tensor(tmp, weight_init_std);
+        instance->params->W[i] = scalar_tensor(tmp, he2);
         free_tensor(tmp);
 
         instance->params->b[i] = create_vector(filter_num);
     }
 
     // Tensor tmp2 = create_tensor_at_random(filter_num, 21, 1, 1);
+
+    double he3 = sqrt(2) / sqrt(filter_num);
     Tensor tmp2 = create_tensor_at_random(21,filter_num,  1, 1);
 
-    instance->params->W[CONV_DEPTH - 1] = scalar_tensor(tmp2, weight_init_std);
+    instance->params->W[CONV_DEPTH - 1] = scalar_tensor(tmp2, he3);
 
     // instance->params->b[5] = create_vector(filter_num);
     instance->params->b[CONV_DEPTH - 1] = create_vector(21);
 
     Matrix tmp3 = create_matrix_at_random(5*5*21,96);
-    instance->params->W1 = product_scalar_matrix(weight_init_std, tmp3);
+
+    double he4 = sqrt(2) / sqrt(21);
+    instance->params->W1 = product_scalar_matrix(he4, tmp3);
     instance->params->b1 = create_vector(96);
 
+    double he5 = sqrt(2) / sqrt(96);
     Matrix tmp4 = create_matrix_at_random(96, 1);
-    instance->params->W2 = product_scalar_matrix(weight_init_std, tmp4);
+    instance->params->W2 = product_scalar_matrix(he5, tmp4);
     instance->params->b2 = create_vector(1);
 
   

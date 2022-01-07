@@ -41,13 +41,13 @@ void gradient_check()
     int train_size = count_lines(train_data_file) / (5 * 40);
     int test_size = count_lines(test_data_file) / (5 * 40);
 
-    ValueNet net = new_value_net(40, 5, 5, 80, 3, 1, 1, 0.01);
+    ValueNet net = new_value_net(40, 5, 5, 1, 3, 1, 1, 0.01);
 
    
 
-    int batch_index[3] = {0,1,2};
-    Tensor x_batch = create_data_batch_tensor(x_train, batch_index, 3);
-    Vector t_batch = create_label_batch_vector(x_label, batch_index, 3);
+    int batch_index[1] = {0};
+    Tensor x_batch = create_data_batch_tensor(x_train, batch_index, 1);
+    Vector t_batch = create_label_batch_vector(x_label, batch_index, 1);
 
     Params grads_b = net->gradient(net, x_batch, t_batch);
     Params grads_n = net->numerical_gradient(net, x_batch, t_batch);
