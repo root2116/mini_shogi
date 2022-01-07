@@ -102,9 +102,8 @@ bool move(Piece this, Point end, Board board,Referee ref, bool will_promote, Pie
         add_vec_to_point(this->cur_loc,this->ability.directions[i],&dest);
         
         if(is_same_point(dest,end)){
-            if(!ref->is_legal_move(ref,board,this,dest)) return false;
-            if(will_promote && ((this->get_kind(this) == GOLD) || (this->get_kind(this) == KING))) return false;
-            if(will_promote && !ref->can_promote(ref,this,dest)) return false;
+            if(!ref->is_legal_move(ref,board,this,dest,will_promote)) return false;
+            
 
 
             if(will_promote){

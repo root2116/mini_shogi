@@ -54,11 +54,12 @@ void user_vs_cpu(Game game, void (*game_ai)()){
     Move move = {0, 0, 0, 0, 0};
     Drop drop = {0, 0, NONE};
 
-    int turn = 0;
+    
 
     while (1)
     {
         
+        int turn = ref->get_turn(ref);
 
         if(ref->is_checkmated(ref,board,ref->get_turn(ref))){
             // printf("Checkmate!\n");
@@ -134,7 +135,7 @@ void user_vs_cpu(Game game, void (*game_ai)()){
         
         // ref->display_history(ref);
         ref->update_turn(ref);
-        turn = ref->get_turn(ref);
+        
     }
 }
 
@@ -147,7 +148,7 @@ void user_vs_user(Game game){
     char input[6]; 
     Move move = {0, 0, 0, 0, 0};
     Drop drop = {0, 0, NONE};
-
+    
     while (1)
     {   
         
@@ -343,7 +344,7 @@ Game new_game(int side){
     Game instance = malloc(sizeof(*instance));
 
     Board board = new_board();
-    Referee ref = new_referee(side);
+    Referee ref = new_referee(FIRST);
 
 
     Player player0 = new_player(FIRST);

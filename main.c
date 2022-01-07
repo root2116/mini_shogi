@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 
     
     Game game = new_game(atoi(argv[1]));
-    game->user_vs_cpu(game, mcts_ai);
+    game->user_vs_cpu(game,mcts_ai);
 
     return 0;
 }
