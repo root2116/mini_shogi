@@ -7,7 +7,7 @@
 
 double forward(Sigmoid this, Matrix x, Vector t){
     this->t = t;
-    double delta = 1e-7;
+    double delta = 1e-9;
     this->y = matrix_sigmoid(x);
 
     
@@ -20,7 +20,7 @@ double forward(Sigmoid this, Matrix x, Vector t){
 
     this->loss =  loss/batch_size;
     if(this->loss < 0 ){
-        printf("Error\n");
+        printf("loss is negative!\n");
         save_matrix("x.txt",x);
         save_matrix("y.txt", this->y);
         save_vector("t.txt",t);

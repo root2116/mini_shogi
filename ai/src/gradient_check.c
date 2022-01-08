@@ -41,7 +41,7 @@ void gradient_check()
     int train_size = count_lines(train_data_file) / (5 * 40);
     int test_size = count_lines(test_data_file) / (5 * 40);
 
-    ValueNet net = new_value_net(40, 5, 5, 1, 3, 1, 1, 0.01);
+    ValueNet net = new_value_net(40, 5, 5, 3, 3, 1, 1, 0.01);
 
    
 
@@ -51,7 +51,9 @@ void gradient_check()
 
     Params grads_b = net->gradient(net, x_batch, t_batch);
     Params grads_n = net->numerical_gradient(net, x_batch, t_batch);
-
+    
+    save_params("data/backprop",grads_b);
+    save_params("data/numerical",grads_n);
     Tensor W_b,W_n;
     Vector b_b,b_n;
     double W_error_conv = 0;

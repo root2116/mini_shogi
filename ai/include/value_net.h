@@ -57,6 +57,6 @@ struct value_net_t
 ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,  double weight_init_std);
 
 void load_params(ValueNet net);
-void save_params(ValueNet net);
+void save_params(char* file_name, Params params);
 
 #endif

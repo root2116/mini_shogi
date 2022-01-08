@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(mini_shogi C)
-set(CMAKE_C_FLAGS "-O3")
+set(CMAKE_C_FLAGS "-g")
 add_subdirectory(ai)
 add_executable(main main.c)
 target_link_libraries(main ai game)

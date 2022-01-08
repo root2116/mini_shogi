@@ -21,6 +21,7 @@ static const double BETA2 = 0.999;
 
 int main(){
     srand((unsigned) time(NULL));
+    // srand(42);
 
     // train_value_net();
     // AI mcs = new_ai("mcs",mcs_ai);

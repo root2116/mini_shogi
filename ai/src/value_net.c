@@ -9,30 +9,34 @@
 #include "affine_tensor.h"
 #include "function.h"
 #include "optimizer.h"
-#include "math.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void save_params(ValueNet net)
+void save_params(char* file_head, Params params)
 {
     Matrix W;
     Tensor T;
     char file_name[32];
     for (int i = 0; i < CONV_DEPTH; i++)
     {
-        T = net->params->W[i];
+        T = params->W[i];
         W = reshape_to_matrix(T, T->num * T->chs, T->rows * T->cols);
-        sprintf(file_name, "W%d_conv.dat", i);
+        sprintf(file_name, "%s_W%d_conv.dat", file_head, i);
         save_matrix_as_binary(file_name, W);
 
-        sprintf(file_name, "b%d_conv.dat", i);
-        save_vector_as_binary(file_name, net->params->b[i]);
+        sprintf(file_name, "%s_b%d_conv.dat", file_head, i);
+        save_vector_as_binary(file_name, params->b[i]);
     }
 
-    save_matrix_as_binary("W1_affine.dat", net->params->W1);
-    save_matrix_as_binary("W2_affine.dat", net->params->W2);
-    save_vector_as_binary("b1_affine.dat", net->params->b1);
-    save_vector_as_binary("b2_affine.dat", net->params->b2);
+    sprintf(file_name, "%s_W1_affine.dat",file_head);
+    save_matrix_as_binary(file_name,params->W1);
+    sprintf(file_name, "%s_W2_affine.dat", file_head);
+    save_matrix_as_binary(file_name,  params->W2);
+    sprintf(file_name, "%s_b1_affine.dat", file_head);
+    save_vector_as_binary(file_name, params->b1);
+    sprintf(file_name, "%s_b2_affine.dat", file_head);
+    save_vector_as_binary(file_name, params->b2);
 }
 
 
@@ -76,6 +80,7 @@ void load_params(ValueNet net){
 
     
 }
+
 
 static double predict_value(ValueNet net, Game game){
     Tensor X = convert_board_into_tensor(game->board);
