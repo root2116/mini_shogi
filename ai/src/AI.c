@@ -5,7 +5,7 @@
 
 
 AI new_ai(char* name, void (*next_action)()){
-    AI instance = calloc(1,sizeof(*instance));
+    AI instance = malloc(sizeof(*instance));
 
     instance->name = name;
     instance->next_action = next_action;

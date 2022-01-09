@@ -17,6 +17,19 @@
 
 #include "util.h"
 
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -29,12 +42,16 @@ void genenrate_data(char* file_name1, char* file_name2, int num){
     
     int count = 0;
     while(count < num){
-        
+        check();
+
         Game game = new_game(FIRST);
-        printf("%d round\n", count);
+        printf("round %d\n", count);
         int result = game->cpu_vs_cpu(game, mcts_ai, mcts_ai, true);
 
-        if(result == 0) continue;
+        if(result == 0){
+            game->free_game(game);
+            continue;
+        }
 
        
 

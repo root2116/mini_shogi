@@ -5,6 +5,19 @@
 #include "utility.h"
 #include "list.h"
 
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -282,7 +295,8 @@ int cpu_vs_cpu(Game game, void (*game_ai0)(), void (*game_ai1)(), bool verbose){
 
     }
 
-    return 0;
+
+    
 }
 
 void free_game(Game game)
@@ -291,7 +305,6 @@ void free_game(Game game)
     free(game->players[1]);
     free(game->ref);
     game->board->free_board(game->board);
-    free(game->board);
     free(game);
 }
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(ai C)
-add_library(ai STATIC ./src/game_ai.c ./src/AI.c ./src/Node.c ./src/data_generator.c ./src/matrix.c ./src/tensor.c ./src/affine_tensor.c ./src/affine.c ./src/convolution.c ./src/function.c ./src/optimizer.c ./src/relu_tensor.c ./src/relu.c ./src/sigmoid.c ./src/value_net.c ./src/util.c ./src/list_double.c ./src/adam.c ./src/trainer.c ./src/train_value_net.c ./src/sgd.c ./src/gradient_check.c)
+add_library(ai STATIC ./src/game_ai.c ./src/AI.c ./src/Node.c ./src/data_generator.c ./src/matrix.c ./src/tensor.c ./src/affine_tensor.c ./src/affine.c ./src/convolution.c ./src/function.c ./src/optimizer.c ./src/relu_tensor.c ./src/relu.c ./src/sigmoid.c ./src/value_net.c ./src/util.c ./src/list_double.c ./src/adam.c ./src/trainer.c ./src/train_value_net.c ./src/sgd.c ./src/gradient_check.c )
 
 add_subdirectory(game)
 add_dependencies(ai game)

@@ -8,6 +8,19 @@
 #include "util.h"
 #include "train_value_net.h"
 #include "gradient_check.h"
+
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
@@ -22,15 +35,15 @@ static const double BETA2 = 0.999;
 int main(){
     srand((unsigned) time(NULL));
     // srand(42);
-
+    init();
     // train_value_net();
     // AI mcs = new_ai("mcs",mcs_ai);
     // AI mcts = new_ai("mcts",mcts_ai);
     // evaluate_strength(mcs,mcts);
-    // genenrate_data("../data/train_data.dat","../data/train_labels.dat",200);
-    // genenrate_data("../data/test_data.dat","../data/test_labels.dat",20);
+    genenrate_data("../data/train_data.dat","../data/train_labels.dat",1000);
+    genenrate_data("../data/test_data.dat","../data/test_labels.dat",100);
 
-    gradient_check();
+    // gradient_check();
     // char *train_data_file = "data/train_data.dat";
     // char *train_label_file = "data/train_labels.dat";
     // char *test_data_file = "data/test_data.dat";

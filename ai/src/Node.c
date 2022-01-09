@@ -64,6 +64,8 @@ int evaluate(Node this){
         if(this->n == this->iter){
             this->expand(this);
         }
+
+        copy->free_game(copy);
         
         return value;
 
@@ -76,6 +78,9 @@ int evaluate(Node this){
         this->n++;
         return value;
     }
+
+
+    
 
 
 
@@ -105,6 +110,8 @@ void expand(Node this){
     this->n_of_children = len;
 
     this->child_nodes = child_nodes;
+
+    free_list(next_actions);
 
 }
 

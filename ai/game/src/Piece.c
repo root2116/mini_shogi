@@ -3,6 +3,19 @@
 #include "Board.h"
 #include "Referee.h"
 #include "utility.h"
+
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__) 
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init() 
+#define check()
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -43,7 +56,7 @@ void swap_piece_attributes(Piece this)
 
 
 Piece new_piece(){
-    Piece piece = calloc(1,sizeof(struct piece_t));
+    Piece piece = malloc(sizeof(struct piece_t));
 
   
     

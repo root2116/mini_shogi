@@ -12,6 +12,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
 ValueNet value_net;
 
 double playout(Game game){
@@ -40,6 +52,8 @@ void random_ai(Game game, char* output){
 
     int rand_num = rand() % len;
 
+    List list_head = next_actions;
+
     for(int i = 0; i < len; i++){
         if(i == rand_num){
             convert_action_into_string(next_actions->action,output);
@@ -48,7 +62,7 @@ void random_ai(Game game, char* output){
         next_actions = next_actions->next;
     }
 
-    free_list(next_actions);
+    free_list(list_head);
 }
 
 
@@ -60,9 +74,14 @@ void mcs_ai(Game game, char* output){
 
     List next_actions = ref->legal_actions(ref, board, ref->get_turn(ref));
     int len = length(next_actions);
-    int *values = calloc(len,sizeof(int));
+    int *values = malloc(len*sizeof(int));
+
+    
+    List list_head = next_actions;
+
     for(int i = 0; i < len; i++){
         Action *action = get_nth(next_actions,i);
+        values[i] = 0;
         for(int j = 0; j < 5; j++){
             game->copy_game(game,copy);
             copy->next_state(copy, *action);
@@ -74,7 +93,7 @@ void mcs_ai(Game game, char* output){
 
     Action *best_action = get_nth(next_actions,argmax(values,len));
     convert_action_into_string(*best_action, output);
-    free_list(next_actions);
+    free_list(list_head);
     free(values);
     copy->free_game(copy);
     
@@ -109,6 +128,7 @@ void mcts_ai(Game game, char* output){
     convert_action_into_string(*best_action,output);
     free_list(next_actions);
     root_node->free_node(root_node);
+    
     
 
 
