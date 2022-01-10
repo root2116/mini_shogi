@@ -1,6 +1,19 @@
 #include "tensor.h"
 #include "matrix.h"
 #include "function.h"
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
+
 #include <stdlib.h>
 
 
@@ -113,6 +126,8 @@ Matrix im2col(Tensor input_data, int filter_h, int filter_w, int stride, int pad
             }
         }
     }
+
+    free_tensor(img);
 
     return R;
 }
@@ -410,3 +425,22 @@ Tensor create_data_batch_tensor(Tensor X, const int* batch_index, int size){
     return T;
 }
 
+
+
+Tensor copy_tensor(Tensor T){
+    Tensor new = create_tensor(T->num, T->chs, T->rows, T->cols);
+
+    double value;
+    for(int i = 0; i < T->num; i++){
+        for(int j = 0; j < T->chs; j++){
+            for(int k = 0; k < T->rows; k++){
+                for(int l = 0; l < T->cols; l++){
+                    value = read_tensor(T,i,j,k,l);
+                    write_tensor(value, new, i,j,k,l);
+                }
+            }
+        }
+    }
+
+    return new;
+}

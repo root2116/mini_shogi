@@ -18,3 +18,32 @@ int count_lines(char *file_name)
 
     return line_count;
 }
+
+char *dirname(char *file_path)
+{
+    char *head = file_path;
+    char *p = file_path;
+
+    int len = 0;
+
+    while (*p != '\0')
+    {
+        p++;
+        len++;
+    }
+    char *dirname = malloc(len * sizeof(char));
+    char *p_dir = dirname;
+    while (*p != '/')
+    {
+        p--;
+    }
+
+    while (head != p)
+    {
+        *p_dir = *head;
+        head++;
+        p_dir++;
+    }
+
+    return dirname;
+}

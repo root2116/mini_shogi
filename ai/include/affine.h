@@ -15,7 +15,7 @@ struct affine_t
     Matrix x;
     Matrix dW;
     Vector db;
-    Matrix (*forward)(Affine, Matrix);
+    Matrix (*forward)(Affine, Matrix, bool);
     Matrix (*backward)(Affine, Matrix);
 };
 

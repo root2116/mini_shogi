@@ -12,7 +12,7 @@ struct sigmoid_t
     Matrix y;
     Vector t;
     double loss;
-    double (*forward)(Sigmoid, Matrix, Vector);
+    double (*forward)(Sigmoid, Matrix, Vector, bool);
     Matrix (*backward)(Sigmoid, double);
 };
 

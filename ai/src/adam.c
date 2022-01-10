@@ -3,9 +3,25 @@
 #include "tensor.h"
 #include "optimizer.h"
 #include "value_net.h"
+
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+
+
 
 static void update_scalar(double* x, double dx, double lr, double beta1, double beta2, double* m, double* v, int iter) {
     const double lr_t = lr * sqrt(1.0 - pow(beta2, iter + 1)) / (1.0 - pow(beta1, iter + 1)); 

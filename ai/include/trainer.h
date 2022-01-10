@@ -36,6 +36,7 @@ struct trainer_t
     bool verbose;
     int iter_per_epoch;
     int max_iter;
+    ListW train_loss_list;
     ListW train_acc_list;
     ListW test_acc_list;
     int current_iter;

@@ -47,7 +47,7 @@ struct value_net_t
     Params params;
     Layers layers;
     double (*predict_value)(ValueNet, Game);
-    Matrix (*predict)(ValueNet, Tensor);
+    Matrix (*predict)(ValueNet, Tensor, bool);
     double (*loss)(ValueNet, Tensor x, Vector t);
     double (*accuracy)(ValueNet, Tensor x, Vector t);
     Params (*numerical_gradient)(ValueNet, Tensor x, Vector t);
@@ -58,5 +58,6 @@ ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter
 
 void load_params(ValueNet net);
 void save_params(char* file_name, Params params);
+void free_params(Params params);
 
 #endif

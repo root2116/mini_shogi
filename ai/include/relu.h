@@ -9,7 +9,7 @@ typedef struct relu_t *Relu;
 struct relu_t
 {
     bool *mask;
-    Matrix (*forward)(Relu, Matrix);
+    Matrix (*forward)(Relu, Matrix, bool);
     Matrix (*backward)(Relu, Matrix);
 
 };

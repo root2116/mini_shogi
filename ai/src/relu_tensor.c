@@ -1,5 +1,19 @@
 #include "relu_tensor.h"
 #include "tensor.h"
+
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
+
 #include <stdlib.h>
 
 static void free_mask_tensor(MaskTensor m) {
@@ -39,12 +53,17 @@ static MaskTensor create_mask_tensor(int num, int chs, int rows, int cols) {
     return m;
 }
 
-static Tensor forward(ReluTensor R, const Tensor x) {
-    if (R->mask != NULL) {
-        free_mask_tensor(R->mask);
-    }
+static Tensor forward(ReluTensor R, const Tensor x, bool is_backprop) {
 
-    R->mask = create_mask_tensor(x->num, x->chs, x->rows, x->cols);
+    if(is_backprop){
+        if (R->mask != NULL)
+        {
+            free_mask_tensor(R->mask);
+        }
+
+        R->mask = create_mask_tensor(x->num, x->chs, x->rows, x->cols);
+    }
+   
 
     Tensor T = create_tensor(x->num, x->chs, x->rows, x->cols);
 
@@ -53,11 +72,18 @@ static Tensor forward(ReluTensor R, const Tensor x) {
             for (int k = 0; k < T->rows; ++k) {
                 for (int l = 0; l < T->cols; ++l) {
                     if (read_tensor(x,i,j,k,l)<= 0) {
-                        R->mask->elements[i][j][k][l] = true;
+                        if(is_backprop){
+                            R->mask->elements[i][j][k][l] = true;
+                        }   
+                        
                         write_tensor(0,T,i,j,k,l);
                         
                     } else {
-                        R->mask->elements[i][j][k][l] = false;
+
+                        if(is_backprop){
+                            R->mask->elements[i][j][k][l] = false;
+                        }
+                        
                         double value = read_tensor(x,i,j,k,l);
                         write_tensor(value, T,i,j,k,l);
                         

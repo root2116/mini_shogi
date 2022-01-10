@@ -39,4 +39,6 @@ Vector tensor_flatten(const Tensor T);
 Tensor scalar_tensor(Tensor T, double v);
 Tensor create_image_batch_tensor(double ****images, const int *batch_index, int size);
 Tensor create_data_batch_tensor(Tensor X, const int *batch_index, int size);
+
+Tensor copy_tensor(Tensor T);
 #endif

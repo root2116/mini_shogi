@@ -3,7 +3,7 @@
 #include "leakdetect.h"
 
 /* 管理するメモリの情報の最大数 */
-#define N 500
+#define N 1500
 
 /* メモリ情報を格納する構造体の配列 */
 MEM_T mem_info[N];
@@ -82,7 +82,7 @@ void leak_detect_free(void *ptr)
 void leak_detect_check(void)
 {
     int i = 0;
-
+    int count = 0;
     for (i = 0; i < N; i++)
     {
         /* 情報が消されていないメモリ管理構造体を探す */
@@ -91,11 +91,15 @@ void leak_detect_check(void)
             /* 情報が消されていない構造体の ptr が指すメモリは解放忘れ */
 
             /* その解放忘れのメモリの情報を出力 */
-            printf("メモリリークを検出!!!!!\n");
-            printf(" アドレス:%p\n", mem_info[i].ptr);
-            printf(" サイズ:%u\n", (unsigned int)mem_info[i].size);
-            printf(" 場所:%s:%u\n", mem_info[i].file, mem_info[i].line);
-            printf("\n");
+            // printf("メモリリークを検出!!!!!\n");
+            // printf(" アドレス:%p\n", mem_info[i].ptr);
+            // printf(" サイズ:%u\n", (unsigned int)mem_info[i].size);
+            // printf(" 場所:%s:%u\n", mem_info[i].file, mem_info[i].line);
+            // printf("\n");
+            count++;
         }
     }
+
+    printf("総メモリリーク数: %d\n",count);
+
 }

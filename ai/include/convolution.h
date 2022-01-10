@@ -20,7 +20,7 @@ struct convolution_t{
     Matrix col_W;
     Tensor dW;
     Vector db;
-    Tensor (*forward)(Convolution, Tensor);
+    Tensor (*forward)(Convolution, Tensor, bool);
     Tensor (*backward)(Convolution, Tensor);
 };
 

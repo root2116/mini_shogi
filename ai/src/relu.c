@@ -1,41 +1,58 @@
 #include "relu.h"
 #include "matrix.h"
+
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
+
 #include <stdlib.h>
 
 
-static Matrix forward(Relu this, Matrix x){
+static Matrix forward(Relu this, Matrix x, bool is_backprop){
 
-    if(this->mask != NULL){
-        free(this->mask);
+    if(is_backprop){
+        if (this->mask != NULL)
+        {
+            free(this->mask);
+        }
+
+        this->mask = malloc(x->rows * x->cols * sizeof(bool));
     }
-    
-    this->mask = malloc(x->rows * x->cols * sizeof(bool));
 
-
+    Matrix out = copy_matrix(x);
     for(int i = 0; i < x->rows; i++){
         for(int j = 0; j < x->cols; j++){
             if(x->elements[i * x->cols + j] <= 0){
-                this->mask[i * x->cols + j] = true;
-            }else{
-                this->mask[i * x->cols + j] = false;
-            }
-            
-        }
-    }
-
-
-
-    Matrix out = copy_matrix(x);
-
-    for(int i = 0; i < out->rows; i++){
-        for(int j = 0; j < out->cols; j++){
-            if(this->mask[i * out->cols + j] == true){
                 out->elements[i * out->cols + j] = 0;
+                
+                if(is_backprop){
+                    this->mask[i * x->cols + j] = true;
+                }
+                
+            }else{
+                if(is_backprop){
+                    this->mask[i * x->cols + j] = false;
+                }
+                
             }
             
         }
     }
-   
+
+
+
+    
+
+    
 
     return out;
 

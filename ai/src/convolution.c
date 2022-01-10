@@ -2,10 +2,21 @@
 #include "tensor.h"
 #include "matrix.h"
 
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
 
 #include <stdlib.h>
 
-static Tensor forward(Convolution this, Tensor x){
+static Tensor forward(Convolution this, Tensor x, bool is_backprop){
     int FN = this->W->num;
     int FH = this->W->rows;
     int FW = this->W->cols;
@@ -17,40 +28,59 @@ static Tensor forward(Convolution this, Tensor x){
     int out_h = (int)(1 + (H + 2 * this->pad - FH) / this->stride);
     int out_w = (int)(1 + (W + 2 * this->pad - FW) / this->stride);
 
-
+   
     Matrix col = im2col(x, FH, FW, this->stride, this->pad);
     
     Matrix tmp0 = reshape_to_matrix(this->W,FN,-1);
     
     Matrix col_W = transpose(tmp0);
+    
 
     Matrix tmp1 = dot_matrix(col,col_W);
     
+
     Matrix tmp2 = add_vector_matrix(this->b,tmp1);
+   
 
     Tensor tmp3 = reshape_to_tensor(tmp2, N, out_h, out_w, -1);
+    
 
     Tensor out = tensor_transpose(tmp3, 0, 3, 1, 2);
+  
 
+    if(is_backprop){
+        if (this->x != NULL)
+        {
+            free_tensor(this->x);
+        }
+        this->x = copy_tensor(x);
+        
 
-    this->x = x;
-    if(this->col != NULL){
-        free_matrix(this->col);
+        if (this->col != NULL)
+        {
+            free_matrix(this->col);
+        }
+        this->col = copy_matrix(col);
+      
+
+        if (this->col_W != NULL)
+        {
+            free_matrix(this->col_W);
+        }
+
+        this->col_W = copy_matrix(col_W);
+ 
     }
-    this->col = col;
-
-    if (this->col_W != NULL)
-    {
-        free_matrix(this->col_W);
-    }
-
-    this->col_W = col_W;
-
+    
+    
+    free_matrix(col);
+    free_matrix(col_W);
     free_matrix(tmp0);
     free_matrix(tmp1);
     free_matrix(tmp2);
     free_tensor(tmp3);
-    
+
+
     return out;
 
 }

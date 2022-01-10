@@ -18,7 +18,7 @@ struct affine_tensor_t
     int original_chs;
     int original_rows;
     int original_cols;
-    Matrix (*forward)(AffineTensor, Tensor);
+    Matrix (*forward)(AffineTensor, Tensor, bool);
     Tensor (*backward)(AffineTensor, Matrix);
 };
 

@@ -1,9 +1,23 @@
 #include "affine_tensor.h"
 #include "tensor.h"
 #include "matrix.h"
+
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
+
 #include <stdlib.h>
 
-static Matrix forward(AffineTensor A, const Tensor X) { 
+static Matrix forward(AffineTensor A, const Tensor X, bool is_backprop) { 
    
 
     A->original_num = X->num;
@@ -13,11 +27,15 @@ static Matrix forward(AffineTensor A, const Tensor X) {
 
     Matrix R = reshape_to_matrix(X, X->num, -1);  
 
-    if (A->X != NULL) {
-        free_matrix(A->X);
-    }
+    if(is_backprop){
+        if (A->X != NULL)
+        {
+            free_matrix(A->X);
+        }
 
-    A->X = copy_matrix(R);
+        A->X = copy_matrix(R);
+    }
+    
 
     Matrix B = dot_matrix(R, A->W);
     for (int i = 0; i < B->rows; ++i) {
@@ -39,6 +57,7 @@ static Tensor backward(AffineTensor A, const Matrix D) {
     Matrix dX = dot_matrix(D, W_T);
     if (A->dW != NULL) {
         free_matrix(A->dW);
+        
     }
 
     A->dW = dot_matrix(X_T, D);

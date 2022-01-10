@@ -28,7 +28,7 @@ typedef struct relu_tensor_t *ReluTensor;
 struct relu_tensor_t
 {
     MaskTensor mask;
-    Tensor (*forward)(ReluTensor, Tensor);
+    Tensor (*forward)(ReluTensor, Tensor, bool);
     Tensor (*backward)(ReluTensor, Tensor);
 };
 

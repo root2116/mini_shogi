@@ -9,6 +9,20 @@
 #include "affine_tensor.h"
 #include "function.h"
 #include "optimizer.h"
+
+#define LEAK_DETECT
+#ifdef LEAK_DETECT
+#include "leakdetect.h"
+#define init leak_detect_init
+#define malloc(s) leak_detelc_malloc(s, __FILE__, __LINE__)
+#define free leak_detect_free
+#define check leak_detect_check
+#else
+#define init()
+#define check()
+#endif
+
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,11 +95,24 @@ void load_params(ValueNet net){
     
 }
 
+void free_params(Params params){
+    for(int i = 0; i < CONV_DEPTH; i++){
+        free(params->W[i]);
+        free(params->b[i]);
+    }
+
+    free(params->W1);
+    free(params->W2);
+    free(params->b1);
+    free(params->b2);
+
+}
+
 
 static double predict_value(ValueNet net, Game game){
     Tensor X = convert_board_into_tensor(game->board);
 
-    Matrix R = net->predict(net, X);
+    Matrix R = net->predict(net, X, false);
     Matrix y = matrix_sigmoid(R);
 
     double value = y->elements[0];
@@ -96,47 +123,60 @@ static double predict_value(ValueNet net, Game game){
     return value;
 }
 
-static Matrix predict(ValueNet net, Tensor x)
+static Matrix predict(ValueNet net, Tensor x, bool is_backprop)
 {
-    Tensor T1 = x;
+    Tensor T1 = copy_tensor(x);
     Tensor T2;
+    
     for(int i = 0; i < CONV_DEPTH; i++){
-        T2 = net->layers->convs[i]->forward(net->layers->convs[i], T1);
-        T1 = net->layers->relus[i]->forward(net->layers->relus[i], T2);
+        
+        T2 = net->layers->convs[i]->forward(net->layers->convs[i], T1, is_backprop);
+        
+        free_tensor(T1);
+        T1 = net->layers->relus[i]->forward(net->layers->relus[i], T2, is_backprop);
     
         free_tensor(T2);
         
     }
 
 
-    Matrix T3 = net->layers->affine1->forward(net->layers->affine1, T1);
-    Matrix T4 = net->layers->relu1->forward(net->layers->relu1, T3);
-    Matrix y = net->layers->affine2->forward(net->layers->affine2,T4);
     
   
-
+    Matrix T3 = net->layers->affine1->forward(net->layers->affine1, T1, is_backprop);
     
+    Matrix T4 = net->layers->relu1->forward(net->layers->relu1, T3, is_backprop);
+
+    Matrix y = net->layers->affine2->forward(net->layers->affine2,T4, is_backprop);
+    
+
+    free_tensor(T1);
+   
     free_matrix(T3);
+   
     free_matrix(T4);
+
 
     return y;
 }
 
+
+
 static double loss(ValueNet net, Tensor X, const Vector t)
 {
-
-    Matrix Y = predict(net, X);
-   
-    const double v = net->layers->sigmoid_with_loss->forward(net->layers->sigmoid_with_loss, Y, t);
+    
+    Matrix Y = predict(net, X, true);
+    
+    const double v = net->layers->sigmoid_with_loss->forward(net->layers->sigmoid_with_loss, Y, t, true);
 
     free_matrix(Y);
-
+  
     return v;
 }
 
 static double accuracy(ValueNet net, Tensor x, Vector t)
 {
-    Matrix y = net->predict(net, x);
+    Matrix tmp = net->predict(net, x, false);
+    Matrix y = matrix_sigmoid(tmp);
 
 
     double sum = 0;
@@ -155,20 +195,25 @@ static double accuracy(ValueNet net, Tensor x, Vector t)
         
     }
 
+    free_matrix(tmp);
+    free_matrix(y);
+
     return sum / (double)(x->num);
 }
 
 static Params gradient(ValueNet net, Tensor X, Vector t)
 {
     net->loss(net, X, t);
-
+  
     Matrix T = net->layers->sigmoid_with_loss->backward(net->layers->sigmoid_with_loss, 1);
-
+   
     Matrix T2 = net->layers->affine2->backward(net->layers->affine2, T);
-
+    
     Matrix T3 = net->layers->relu1->backward(net->layers->relu1, T2);
+   
 
     Tensor T4 = net->layers->affine1->backward(net->layers->affine1, T3);
+    
 
     Tensor T5;
     for(int i = 0; i < CONV_DEPTH; i++){
@@ -177,16 +222,15 @@ static Params gradient(ValueNet net, Tensor X, Vector t)
         T4 = net->layers->convs[CONV_DEPTH - 1 -i]->backward(net->layers->convs[CONV_DEPTH - 1 -i], T5);
         free_tensor(T5);
     }
-    
-
-    
-
+   
     free_matrix(T);
     free_matrix(T2);
+    //T2をfreeすると自動的にT3もfreeされます。reluはただマスクしてるだけなので
     // free_matrix(T3);
 
     free_tensor(T4);
     // free_tensor(T5);
+ 
 
     Params grads = malloc(sizeof(*grads));
 
@@ -198,7 +242,8 @@ static Params gradient(ValueNet net, Tensor X, Vector t)
     grads->W2 = net->layers->affine2->dW;
     grads->b1 = net->layers->affine1->db;
     grads->b2 = net->layers->affine2->db;
-    
+
+ 
 
     return grads;
 }
@@ -387,6 +432,7 @@ ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter
     free_tensor(tmp1);
     free_tensor(tmp2);
     free_matrix(tmp3);
+    free_matrix(tmp4);
     
 
     return instance;
