@@ -165,6 +165,21 @@ Matrix create_matrix_at_random(int rows, int cols){
     return M;
 }
 
+Matrix create_matrix_at_uniform_random(int rows, int cols){
+    Matrix M = create_matrix(rows, cols);
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            M->elements[i * M->cols + j] = Uniform();
+        }
+    }
+
+    return M;
+}
+
+
 Vector add_vector(const Vector a, const Vector b){
 
     if(a->size != b->size){

@@ -134,6 +134,31 @@ void mcts_ai(Game game, char* output){
 
 }
 
+// void cnn_ai(Game game, char *output){
+//     Board board = game->board;
+//     Referee ref = game->ref;
+
+//     List next_actions = ref->legal_actions(ref, board, ref->get_turn(ref));
+
+//     int len = length(next_actions);
+
+ 
+
+//     List list_head = next_actions;
+
+//     for (int i = 0; i < len; i++)
+//     {
+       
+        
+//             convert_action_into_string(next_actions->action, output);
+//             break;
+        
+//         next_actions = next_actions->next;
+//     }
+
+//     free_list(list_head);
+// }
+
 void cnn_mcts_ai(Game game, char *output)
 {
 

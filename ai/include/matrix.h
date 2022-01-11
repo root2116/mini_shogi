@@ -47,6 +47,7 @@ Vector create_vector_from_binary_file(const char* file_path, int size);
 Matrix create_matrix(int rows, int cols);
 Matrix create_matrix_from_file(const char *file_path, int rows, int cols);
 Matrix create_matrix_at_random(int rows, int cols);
+Matrix create_matrix_at_uniform_random(int rows, int cols);
 Vector create_vector_from_file(const char *file_path, int size);
 Matrix create_matrix_with_ptr(int rows, int cols, double *elements);
 Matrix create_matrix_from_binary_file(const char *file_name, int rows, int cols);

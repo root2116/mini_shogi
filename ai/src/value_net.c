@@ -373,7 +373,7 @@ static Params numerical_gradient(ValueNet net, Tensor x, Vector t)
     return grads;
 }
 
-ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,double input_dropout_rate,double hidden_dropout_rate, double output_dropout_rate)
+ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,double input_dropout_rate,double hidden_dropout_rate, double output_dropout_rate, int affine_node_num)
 {
 
     int input_size = input_rows;
@@ -410,14 +410,14 @@ ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter
     // instance->params->b[5] = create_vector(filter_num);
     instance->params->b[CONV_DEPTH - 1] = create_vector(21);
 
-    Matrix tmp3 = create_matrix_at_random(5*5*21,96);
+    Matrix tmp3 = create_matrix_at_random(5*5*21,affine_node_num);
 
     double he4 = sqrt(2) / sqrt(21);
     instance->params->W1 = product_scalar_matrix(he4, tmp3);
-    instance->params->b1 = create_vector(96);
+    instance->params->b1 = create_vector(affine_node_num);
 
-    double he5 = sqrt(2) / sqrt(96);
-    Matrix tmp4 = create_matrix_at_random(96, 1);
+    double he5 = sqrt(2) / sqrt(affine_node_num);
+    Matrix tmp4 = create_matrix_at_random(affine_node_num, 1);
     instance->params->W2 = product_scalar_matrix(he5, tmp4);
     instance->params->b2 = create_vector(1);
 

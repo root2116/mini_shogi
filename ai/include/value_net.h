@@ -58,7 +58,7 @@ struct value_net_t
     Params (*gradient)(ValueNet, Tensor x, Vector t);
 };
 
-ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,  double input_dropout_rate, double hidden_dropout_rate, double output_dropout_rate);
+ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,  double input_dropout_rate, double hidden_dropout_rate, double output_dropout_rate, int affine_node_num);
 
 void load_params(ValueNet net);
 void save_params(char* file_name, Params params);

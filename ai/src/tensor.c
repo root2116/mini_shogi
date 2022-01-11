@@ -70,6 +70,29 @@ Tensor create_tensor_at_random(int num, int chs, int rows, int cols){
     return R;
 }
 
+Tensor create_tensor_at_uniform_random(int num, int chs, int rows, int cols)
+{
+
+    Tensor R = create_tensor(num, chs, rows, cols);
+    for (int i = 0; i < num; i++)
+    {
+        for (int j = 0; j < chs; j++)
+        {
+            for (int k = 0; k < rows; k++)
+            {
+                for (int l = 0; l < cols; l++)
+                {
+                    double value = Uniform();
+
+                    write_tensor(value, R, i, j, k, l);
+                }
+            }
+        }
+    }
+
+    return R;
+}
+
 void free_tensor(Tensor tensor){
     free(tensor->elements);
     free(tensor);

@@ -26,7 +26,7 @@ static Matrix forward(Dropout this, const Matrix X, bool is_backprop)
             free_mask(this->mask);
         }
 
-        Matrix RND = create_matrix_at_random(X->rows, X->cols);
+        Matrix RND = create_matrix_at_uniform_random(X->rows, X->cols);
         
         Matrix M = create_matrix(X->rows, X->cols);
         this->mask = create_mask(X->rows, X->cols);

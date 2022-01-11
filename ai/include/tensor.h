@@ -19,7 +19,7 @@ typedef struct tensor_t *Tensor;
 
 Tensor create_tensor(int num, int chs, int rows, int cols);
 Tensor create_tensor_at_random(int num, int chs, int rows, int cols);
-
+Tensor create_tensor_at_uniform_random(int num, int chs, int rows, int cols);
 void free_tensor(Tensor tensor);
 double read_tensor(Tensor tensor, int n, int ch, int row, int col);
 void write_tensor(double value, Tensor tensor, int n, int ch, int row, int col);

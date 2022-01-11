@@ -33,7 +33,7 @@ static Tensor forward(DropoutTensor this, const Tensor X, bool is_backprop)
         }
 
         
-        Tensor RND = create_tensor_at_random(X->num, X->chs, X->rows, X->cols);
+        Tensor RND = create_tensor_at_uniform_random(X->num, X->chs, X->rows, X->cols);
 
         Tensor M = create_tensor(X->num, X->chs, X->rows, X->cols);
         this->mask = create_mask_tensor(X->num, X->chs, X->rows, X->cols);
