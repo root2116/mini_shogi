@@ -15,6 +15,8 @@
 #include "matrix.h"
 #include "tensor.h"
 #include "sigmoid.h"
+#include "dropout.h"
+#include "dropout_tensor.h"
 
 struct params_t
 {
@@ -32,6 +34,8 @@ typedef struct layers_t *Layers;
 
 struct layers_t
 {
+    DropoutTensor dropouts[CONV_DEPTH+1];
+    Dropout dropout1;
     Convolution convs[CONV_DEPTH];
     ReluTensor relus[CONV_DEPTH];
     Relu relu1;
@@ -54,7 +58,7 @@ struct value_net_t
     Params (*gradient)(ValueNet, Tensor x, Vector t);
 };
 
-ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,  double weight_init_std);
+ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,  double input_dropout_rate, double hidden_dropout_rate, double output_dropout_rate);
 
 void load_params(ValueNet net);
 void save_params(char* file_name, Params params);

@@ -9,6 +9,9 @@
 #include "affine_tensor.h"
 #include "function.h"
 #include "optimizer.h"
+#include "dropout.h"
+#include "dropout_tensor.h"
+
 
 #define LEAK_DETECT
 #ifdef LEAK_DETECT
@@ -125,36 +128,45 @@ static double predict_value(ValueNet net, Game game){
 
 static Matrix predict(ValueNet net, Tensor x, bool is_backprop)
 {
+
     Tensor T1 = copy_tensor(x);
-    Tensor T2;
-    
+    Tensor T2 = net->layers->dropouts[0]->forward(net->layers->dropouts[0],T1,is_backprop);
+    Tensor T3,T4;
     for(int i = 0; i < CONV_DEPTH; i++){
         
-        T2 = net->layers->convs[i]->forward(net->layers->convs[i], T1, is_backprop);
+        T3 = net->layers->convs[i]->forward(net->layers->convs[i], T2, is_backprop);
         
-        free_tensor(T1);
-        T1 = net->layers->relus[i]->forward(net->layers->relus[i], T2, is_backprop);
-    
         free_tensor(T2);
-        
+        T4 = net->layers->relus[i]->forward(net->layers->relus[i], T3, is_backprop);
+    
+        free_tensor(T3);
+        T2 = net->layers->dropouts[i+1]->forward(net->layers->dropouts[i+1], T4, is_backprop);
+        free_tensor(T4);
+
     }
+
+
 
 
     
   
-    Matrix T3 = net->layers->affine1->forward(net->layers->affine1, T1, is_backprop);
+    Matrix T5 = net->layers->affine1->forward(net->layers->affine1, T2, is_backprop);
     
-    Matrix T4 = net->layers->relu1->forward(net->layers->relu1, T3, is_backprop);
+    Matrix T6 = net->layers->relu1->forward(net->layers->relu1, T5, is_backprop);
 
-    Matrix y = net->layers->affine2->forward(net->layers->affine2,T4, is_backprop);
+    Matrix T7 = net->layers->dropout1->forward(net->layers->dropout1, T6, is_backprop);
+
+    Matrix y = net->layers->affine2->forward(net->layers->affine2,T7, is_backprop);
     
 
     free_tensor(T1);
+    free_tensor(T2);
+    
    
-    free_matrix(T3);
-   
-    free_matrix(T4);
 
+    free_matrix(T5);
+    free_matrix(T6);
+    free_matrix(T7);
 
     return y;
 }
@@ -204,33 +216,40 @@ static double accuracy(ValueNet net, Tensor x, Vector t)
 static Params gradient(ValueNet net, Tensor X, Vector t)
 {
     net->loss(net, X, t);
-  
+    
     Matrix T = net->layers->sigmoid_with_loss->backward(net->layers->sigmoid_with_loss, 1);
    
     Matrix T2 = net->layers->affine2->backward(net->layers->affine2, T);
     
-    Matrix T3 = net->layers->relu1->backward(net->layers->relu1, T2);
-   
+    Matrix T3 = net->layers->dropout1->backward(net->layers->dropout1, T2);
 
-    Tensor T4 = net->layers->affine1->backward(net->layers->affine1, T3);
+    Matrix T4 = net->layers->relu1->backward(net->layers->relu1, T3);
+
+
+    Tensor T5 = net->layers->affine1->backward(net->layers->affine1, T4);
     
 
-    Tensor T5;
+    Tensor T6,T7;
     for(int i = 0; i < CONV_DEPTH; i++){
-        T5 = net->layers->relus[CONV_DEPTH - 1 -i]->backward(net->layers->relus[CONV_DEPTH - 1 -i], T4);
-        free_tensor(T4);
-        T4 = net->layers->convs[CONV_DEPTH - 1 -i]->backward(net->layers->convs[CONV_DEPTH - 1 -i], T5);
+        T6 = net->layers->dropouts[CONV_DEPTH - i]->backward(net->layers->dropouts[CONV_DEPTH - i], T5);
         free_tensor(T5);
+        T7 = net->layers->relus[CONV_DEPTH - 1 -i]->backward(net->layers->relus[CONV_DEPTH - 1 -i], T6);
+        free_tensor(T6);
+        T5 = net->layers->convs[CONV_DEPTH - 1 -i]->backward(net->layers->convs[CONV_DEPTH - 1 -i], T7);
+        free_tensor(T7);
     }
+
+    Tensor T8 = net->layers->dropouts[0]->backward(net->layers->dropouts[0], T5);
+
    
     free_matrix(T);
     free_matrix(T2);
     //T2をfreeすると自動的にT3もfreeされます。reluはただマスクしてるだけなので
-    // free_matrix(T3);
+    free_matrix(T3);
 
-    free_tensor(T4);
-    // free_tensor(T5);
- 
+    
+    free_tensor(T5);
+    free_tensor(T8);
 
     Params grads = malloc(sizeof(*grads));
 
@@ -354,7 +373,7 @@ static Params numerical_gradient(ValueNet net, Tensor x, Vector t)
     return grads;
 }
 
-ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,double weight_init_std)
+ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter_num, int filter_size, int filter_pad, int filter_stride,double input_dropout_rate,double hidden_dropout_rate, double output_dropout_rate)
 {
 
     int input_size = input_rows;
@@ -405,11 +424,18 @@ ValueNet new_value_net(int input_chs, int input_rows, int input_cols, int filter
   
     instance->layers = malloc(sizeof(struct layers_t));
 
-    
+    instance->layers->dropouts[0] = new_dropout_tensor(input_dropout_rate);
+
     for(int i = 0; i < CONV_DEPTH - 1; i++){
         instance->layers->convs[i] = new_convolution(instance->params->W[i], instance->params->b[i], filter_stride, filter_pad);
         instance->layers->relus[i] = new_relu_tensor();
+
+        instance->layers->dropouts[i+1] = new_dropout_tensor(hidden_dropout_rate);
     }
+
+    instance->layers->dropouts[CONV_DEPTH] = new_dropout_tensor(hidden_dropout_rate);
+
+    instance->layers->dropout1 = new_dropout(output_dropout_rate);
 
     instance->layers->convs[CONV_DEPTH - 1] = new_convolution(instance->params->W[CONV_DEPTH - 1], instance->params->b[CONV_DEPTH - 1], filter_stride, 0);
     instance->layers->relus[CONV_DEPTH - 1] = new_relu_tensor();

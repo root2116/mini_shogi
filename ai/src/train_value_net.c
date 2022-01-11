@@ -41,7 +41,7 @@ void train_value_net()
     int train_size = count_lines(train_data_file) / (5 * 40);
     int test_size = count_lines(test_data_file)/ (5 * 40);
 
-    ValueNet net = new_value_net(40, 5, 5, 80, 3, 1, 1,0.01);
+    ValueNet net = new_value_net(40, 5, 5, 80, 3, 1, 1,0.2,0.5,0.2);
 
     Trainer trainer = new_trainer(net,x_train, x_label, t_test, t_label,EPOCHS,Adam , MINI_BATCH_SIZE, train_size, test_size, LEARNING_RATE, true);
 

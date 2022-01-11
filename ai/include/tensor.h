@@ -41,4 +41,5 @@ Tensor create_image_batch_tensor(double ****images, const int *batch_index, int 
 Tensor create_data_batch_tensor(Tensor X, const int *batch_index, int size);
 
 Tensor copy_tensor(Tensor T);
+Tensor product_scalar_tensor(Tensor T, double a);
 #endif

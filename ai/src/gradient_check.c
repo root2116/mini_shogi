@@ -41,7 +41,7 @@ void gradient_check()
     int train_size = count_lines(train_data_file) / (5 * 40);
     int test_size = count_lines(test_data_file) / (5 * 40);
 
-    ValueNet net = new_value_net(40, 5, 5, 3, 3, 1, 1, 0.01);
+    ValueNet net = new_value_net(40, 5, 5, 3, 3, 1, 1, 0.2,0.5,0.2);
 
    
 

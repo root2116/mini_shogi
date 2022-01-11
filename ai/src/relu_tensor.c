@@ -1,4 +1,5 @@
 #include "relu_tensor.h"
+#include "mask.h"
 #include "tensor.h"
 
 #define LEAK_DETECT
@@ -16,42 +17,6 @@
 
 #include <stdlib.h>
 
-static void free_mask_tensor(MaskTensor m) {
-    for (int i = 0; i < m->num; ++i) {
-        for (int j = 0; j < m->chs; ++j) {
-            for (int k = 0; k < m->rows; ++k) {
-                free(m->elements[i][j][k]);
-            }
-            free(m->elements[i][j]);
-        }
-        free(m->elements[i]);
-    }
-    free(m->elements);
-    free(m);
-}
-
-
-
-static MaskTensor create_mask_tensor(int num, int chs, int rows, int cols) {
-    MaskTensor m   = malloc(sizeof(*m));
-    m->num = num;
-    m->chs = chs;
-    m->rows = rows;
-    m->cols = cols;
-
-    m->elements = calloc(num, sizeof(bool***));
-    for (int i = 0; i < num; ++i) {
-        m->elements[i] = calloc(chs, sizeof(bool**));
-        for (int j = 0; j < chs; ++j) {
-            m->elements[i][j] = calloc(rows, sizeof(bool*));
-            for (int k = 0; k < rows; ++k) {
-                m->elements[i][j][k] = calloc(cols, sizeof(bool));
-            }
-        }
-    }
-
-    return m;
-}
 
 static Tensor forward(ReluTensor R, const Tensor x, bool is_backprop) {
 

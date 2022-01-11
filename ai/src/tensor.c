@@ -444,3 +444,22 @@ Tensor copy_tensor(Tensor T){
 
     return new;
 }
+
+
+Tensor product_scalar_tensor(Tensor T, double a){
+    Tensor new = create_tensor(T->num, T->chs, T->rows, T->cols);
+
+    double value;
+    for(int i = 0; i < T->num; i++){
+        for(int j = 0; j < T->chs; j++){
+            for(int k = 0; k < T->rows; k++){
+                for(int l = 0; l < T->cols; l++){
+                    value = read_tensor(T, i,j, k, l);
+                    write_tensor(value*a, new, i,j,k,l);
+                }
+            }
+        }
+    }
+
+    return new;
+}
